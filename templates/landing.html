@@ -707,8 +707,13 @@
                 <span class="fw-bold fs-5">منظومة ابن سينا لإدارة العيادات والمراكز الطبية</span>
             </div>
             <p class="text-white-50 small mb-2">جميع الحقوق محفوظة © 2026 - المطور والمالك: Ahmed Mabrouk</p>
-            <div class="text-white-50 small">
+            <div class="text-white-50 small mb-2">
                 للمبيعات والدعم الفني المباشر: <a href="tel:{{ sales_phone }}" class="text-teal text-decoration-none fw-bold">{{ sales_phone }}</a>
+            </div>
+            <div>
+                <a href="{{ url_for('login') }}" class="text-white-50 small text-decoration-none" title="دخول إدارة المبيعات">
+                    <i class="fa-solid fa-lock me-1"></i> بوابة إدارة المبيعات
+                </a>
             </div>
         </div>
     </footer>
