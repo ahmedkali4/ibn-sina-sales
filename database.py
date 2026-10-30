@@ -13,10 +13,10 @@ else:
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # Local DB path with Vercel serverless /tmp fallback
-if os.path.exists("/tmp") and os.environ.get("VERCEL"):
-    DB_PATH = "/tmp/al_tabeeb_sales.db"
+if os.path.exists("/tmp"):
+    DB_PATH = os.environ.get('SALES_HUB_DB_PATH', "/tmp/ibn_sina_sales.db")
 else:
-    DB_PATH = os.environ.get('SALES_HUB_DB_PATH', os.path.join(BASE_DIR, "al_tabeeb_sales.db"))
+    DB_PATH = os.environ.get('SALES_HUB_DB_PATH', os.path.join(BASE_DIR, "ibn_sina_sales.db"))
 
 TURSO_DB_URL = os.environ.get('TURSO_DB_URL', "").strip().strip('"').strip("'")
 TURSO_AUTH_TOKEN = os.environ.get('TURSO_AUTH_TOKEN', "").strip().strip('"').strip("'")

@@ -125,6 +125,8 @@ def inject_global_settings():
 # ----------------- Public Landing Page -----------------
 
 @app.route('/')
+@app.route('/api/index')
+@app.route('/api/index/')
 def home():
     """
     Public Landing Page with Egyptian Medical Clinic Presentation.
