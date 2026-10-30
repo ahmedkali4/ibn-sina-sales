@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+
+{% block title %}إعدادات المنظومة والنسخ الاحتياطي{% endblock %}
+
+{% block content %}
+<div class="row align-items-center mb-4">
+    <div class="col-md-7">
+        <h3 class="fw-bold text-navy mb-1">
+            <i class="fa-solid fa-sliders text-teal me-2"></i> إعدادات المنظومة والنسخ الاحتياطي
+        </h3>
+        <p class="text-muted mb-0 small">تخصيص أرقام التواصل وأسعار الباقات وتغيير كلمة مرور المدير وتصدير البيانات</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- General Settings -->
+    <div class="col-lg-8">
+        <div class="bg-white p-4 p-md-5 rounded-4 border shadow-sm mb-4">
+            <h5 class="fw-bold text-navy mb-4"><i class="fa-solid fa-gear text-teal me-2"></i> الإعدادات العامة لصفحة الهبوط والمبيعات</h5>
+
+            <form action="{{ url_for('settings_view') }}" method="POST">
+                <input type="hidden" name="action" value="save_general">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold">رقم هاتف المبيعات والدعم الفني:</label>
+                        <input type="text" name="sales_phone" class="form-control" value="{{ settings.sales_phone }}" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold">رقم واتساب المبيعات (مع كود الدولة):</label>
+                        <input type="text" name="sales_whatsapp" class="form-control" value="{{ settings.sales_whatsapp }}" placeholder="201550597688" required>
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label small fw-bold">رابط تحميل البرنامج (Google Drive أو مباشر):</label>
+                        <input type="url" name="download_url" class="form-control text-start font-monospace" dir="ltr" value="{{ settings.download_url }}" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">سعر باقة العيادة الفردية (ج.م):</label>
+                        <input type="number" step="100" name="single_clinic_price" class="form-control fw-bold" value="{{ settings.single_clinic_price }}" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">سعر باقة المركز المتعدد (ج.م):</label>
+                        <input type="number" step="100" name="multi_clinic_price" class="form-control fw-bold" value="{{ settings.multi_clinic_price }}" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">سعر الدعم الفني السنوي (ج.م):</label>
+                        <input type="number" step="100" name="annual_support_price" class="form-control fw-bold" value="{{ settings.annual_support_price }}" required>
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-3 border-top text-end">
+                    <button type="submit" class="btn btn-teal rounded-pill px-5 py-2 fw-bold">
+                        <i class="fa-solid fa-floppy-disk me-1"></i> حفظ الإعدادات العامة
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Database Backup -->
+        <div class="bg-white p-4 p-md-5 rounded-4 border shadow-sm">
+            <h5 class="fw-bold text-navy mb-2"><i class="fa-solid fa-database text-primary me-2"></i> النسخ الاحتياطي لقاعدة البيانات</h5>
+            <p class="text-muted small mb-4">قم بتصدير وتحميل نسخة احتياطية ذرية مشفرة من قاعدة بيانات المبيعات والعملاء والتراخيص في أي وقت:</p>
+
+            <div class="d-flex align-items-center justify-content-between p-3 bg-light rounded-3 border">
+                <div>
+                    <h6 class="fw-bold mb-1 text-dark">نسخة قاعدة بيانات المبيعات الحالية</h6>
+                    <small class="text-muted">ملف SQLite آمن يحتوي على كافة بيانات الأطباء والتراخيص والمقبوضات.</small>
+                </div>
+                <a href="{{ url_for('download_backup') }}" class="btn btn-navy text-white rounded-pill px-4 py-2 fw-bold">
+                    <i class="fa-solid fa-cloud-arrow-down me-1"></i> تحميل النسخة الاحتياطية
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Security & Password -->
+    <div class="col-lg-4">
+        <div class="bg-white p-4 rounded-4 border shadow-sm mb-4">
+            <h5 class="fw-bold text-navy mb-3"><i class="fa-solid fa-lock text-danger me-2"></i> تغيير كلمة مرور المدير</h5>
+
+            <form action="{{ url_for('settings_view') }}" method="POST">
+                <input type="hidden" name="action" value="change_password">
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">كلمة المرور الحالية: *</label>
+                    <input type="password" name="current_password" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">كلمة المرور الجديدة: *</label>
+                    <input type="password" name="new_password" class="form-control" placeholder="6 أحرف أو أكثر" required>
+                </div>
+                <button type="submit" class="btn btn-danger w-100 rounded-pill py-2 fw-bold">
+                    <i class="fa-solid fa-key me-1"></i> تحديث كلمة المرور
+                </button>
+            </form>
+        </div>
+
+        <!-- Testing Tools for Option 1 -->
+        <div class="bg-white p-4 rounded-4 border shadow-sm">
+            <h6 class="fw-bold text-navy mb-2"><i class="fa-solid fa-vial text-info me-2"></i> أدوات فحص وتجربة الزائر</h6>
+            <p class="text-muted small mb-3">لاختبار صفحة الهبوط كزائر غريب تماماً للتأكد من حساب الزيارات:</p>
+            <a href="{{ url_for('clear_admin_cookie') }}" class="btn btn-outline-secondary btn-sm w-100 rounded-pill py-2">
+                <i class="fa-solid fa-eye-slash me-1"></i> مسح كوكيز الإدارة والتصفح كزائر عادي
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

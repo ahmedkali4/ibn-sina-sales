@@ -1,0 +1,13 @@
+/* Al-Tabeeb Sales & Landing Custom Styles */
+:root {
+    --primary-navy: #0b2545;
+    --secondary-navy: #134074;
+    --accent-teal: #0d9488;
+    --teal-hover: #0f766e;
+    --accent-emerald: #10b981;
+    --soft-bg: #f8fafc;
+}
+
+body {
+    font-family: 'Cairo', sans-serif;
+}

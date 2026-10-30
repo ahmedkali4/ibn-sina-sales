@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إيصال قبض مالي - {{ receipt.receipt_number }}</title>
+    <!-- Bootstrap 5 RTL -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css">
+    <!-- FontAwesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: #f1f5f9;
+            color: #1e293b;
+            padding: 40px 0;
+        }
+
+        .receipt-card {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 800px;
+            margin: 0 auto;
+            border: 2px solid #cbd5e1;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            position: relative;
+        }
+
+        .receipt-header {
+            border-bottom: 2px dashed #94a3b8;
+            padding-bottom: 25px;
+            margin-bottom: 30px;
+        }
+
+        .watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-30deg);
+            font-size: 5rem;
+            color: rgba(13, 148, 136, 0.05);
+            font-weight: 900;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        @media print {
+            body {
+                background: #ffffff;
+                padding: 0;
+            }
+            .receipt-card {
+                border: 1px solid #000;
+                box-shadow: none;
+                border-radius: 0;
+                padding: 20px;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="text-center mb-4 no-print">
+            <button onclick="window.print()" class="btn btn-primary rounded-pill px-4 py-2 fw-bold shadow-sm me-2">
+                <i class="fa-solid fa-print me-1"></i> طباعة إيصال القبض
+            </button>
+            <button onclick="window.close()" class="btn btn-outline-secondary rounded-pill px-4 py-2">
+                إغلاق النافذة
+            </button>
+        </div>
+
+        <div class="receipt-card">
+            <div class="watermark">منظومة ابن سينا</div>
+
+            <!-- Receipt Header -->
+            <div class="receipt-header d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="bg-primary text-white p-3 rounded-4" style="background-color: #0b2545 !important;">
+                        <i class="fa-solid fa-stethoscope fs-2" style="color: #0d9488;"></i>
+                    </div>
+                    <div>
+                        <h4 class="fw-bold mb-1" style="color: #0b2545;">منظومة ابن سينا للعيادات والمراكز</h4>
+                        <small class="text-muted">إدارة المبيعات والتراخيص الطبية المعتمدة</small>
+                    </div>
+                </div>
+
+                <div class="text-end">
+                    <div class="badge bg-success-subtle text-success fs-6 px-3 py-2 rounded-pill fw-bold mb-1">
+                        إيصال قبض وسداد مالي
+                    </div>
+                    <div class="font-monospace small text-muted">رقم: {{ receipt.receipt_number }}</div>
+                    <div class="small text-muted">التاريخ: {{ receipt.payment_date }}</div>
+                </div>
+            </div>
+
+            <!-- Receipt Body -->
+            <div class="mb-4">
+                <div class="row g-3 mb-3">
+                    <div class="col-6">
+                        <label class="text-muted small">وصلنا من السيد الدكتور / المركز:</label>
+                        <h5 class="fw-bold mb-0 text-dark">{{ receipt.clinic_name }} (د. {{ receipt.doctor_name }})</h5>
+                        <small class="text-muted">{{ receipt.specialty }} - {{ receipt.city }}</small>
+                    </div>
+                    <div class="col-6 text-end">
+                        <label class="text-muted small">رقم الهاتف:</label>
+                        <h6 class="font-monospace text-dark fw-bold mb-0">{{ receipt.phone }}</h6>
+                    </div>
+                </div>
+
+                <div class="p-3 bg-light rounded-3 border my-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-muted small">مبلغ وقدره:</span>
+                        <h3 class="fw-bold text-success mb-0">{{ "{:,.0f}".format(receipt.amount) }} جنيه مصري فقط لا غير</h3>
+                    </div>
+                    <div class="text-muted small">
+                        وذلك سداداً عن: <strong>{{ receipt.notes or 'قيمة ترخيص منظومة الطبيب لإدارة العيادات' }}</strong>
+                    </div>
+                </div>
+
+                <div class="row g-3 small text-muted mb-4">
+                    <div class="col-4">
+                        <span>طريقة السداد:</span> <strong class="text-dark">{{ receipt.payment_method }}</strong>
+                    </div>
+                    <div class="col-4">
+                        <span>إجمالي التعاقد:</span> <strong class="text-dark">{{ "{:,.0f}".format(receipt.total_price) }} ج.م</strong>
+                    </div>
+                    <div class="col-4 text-end">
+                        <span>المتبقي بعد هذا الإيصال:</span> <strong class="text-danger">{{ "{:,.0f}".format(receipt.remaining_amount) }} ج.م</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Signatures -->
+            <div class="row pt-4 border-top">
+                <div class="col-6">
+                    <div class="text-muted small mb-4">توقيع المستلم / إدارة المبيعات:</div>
+                    <div class="fw-bold text-dark">أحمد مبروك</div>
+                    <small class="text-muted">المالك والمدير العام</small>
+                </div>
+                <div class="col-6 text-end">
+                    <div class="text-muted small mb-4">ختم الإدارة والاعتماد:</div>
+                    <div class="d-inline-block border border-2 border-teal rounded-circle p-3 text-center" style="width: 80px; height: 80px; border-color: #0d9488 !important;">
+                        <small class="d-block fw-bold" style="color: #0d9488; font-size: 9px;">معتمد رسمي</small>
+                        <i class="fa-solid fa-check-double text-teal" style="color: #0d9488;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

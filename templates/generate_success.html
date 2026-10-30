@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block title %}تم توليد مفتاح التفعيل بنجاح{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="text-center mb-4">
+            <div class="bg-success-subtle text-success p-3 rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 70px; height: 70px;">
+                <i class="fa-solid fa-circle-check fs-2"></i>
+            </div>
+            <h3 class="fw-bold text-navy">تم توليد مفتاح الترخيص الطبي بنجاح!</h3>
+            <p class="text-muted small">الترخيص موقع إلكترونياً ومتطابق مع كود جهاز العيادة</p>
+        </div>
+
+        <!-- License Details Card -->
+        <div class="bg-white p-4 rounded-4 border shadow-sm mb-4">
+            <div class="d-flex justify-content-between align-items-center pb-3 border-bottom mb-3">
+                <span class="text-muted small fw-bold">العيادة / المركز:</span>
+                <span class="fw-bold text-navy fs-5">{{ clinic_name }}</span>
+            </div>
+            <div class="row g-3 small text-muted mb-3">
+                <div class="col-6">
+                    <span>الطبيب:</span> <strong class="text-dark">{{ doctor_name or 'دكتور العيادة' }}</strong>
+                </div>
+                <div class="col-6 text-end">
+                    <span>مدة الترخيص:</span> <span class="badge bg-primary-subtle text-primary">{{ duration_type }}</span>
+                </div>
+                <div class="col-6">
+                    <span>تاريخ الانتهاء:</span> <strong class="text-dark">{{ expires_at or 'ترخيص دائم مدى الحياة' }}</strong>
+                </div>
+                <div class="col-6 text-end">
+                    <span>كود الجهاز:</span> <code class="text-uppercase bg-light p-1 rounded font-monospace">{{ machine_id }}</code>
+                </div>
+            </div>
+
+            <!-- License Key Token Box -->
+            <label class="form-label small fw-bold text-dark">رمز التفعيل المعتمد (License Token):</label>
+            <div class="input-group mb-3">
+                <textarea id="tokenBox" class="form-control font-monospace bg-light p-3 small text-break" rows="3" readonly>{{ token }}</textarea>
+                <button class="btn btn-teal px-4 fw-bold" onclick="copyToken()">
+                    <i class="fa-regular fa-copy me-1"></i> نسخ المفتاح
+                </button>
+            </div>
+        </div>
+
+        <!-- WhatsApp Sharing Box -->
+        <div class="bg-white p-4 rounded-4 border shadow-sm mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold text-navy mb-0">
+                    <i class="fa-brands fa-whatsapp text-success me-2"></i> رسالة واتساب جاهزة للإرسال للطبيب
+                </h5>
+                <a href="{{ wa_link }}" target="_blank" class="btn btn-success btn-sm rounded-pill px-3 fw-bold">
+                    <i class="fa-brands fa-whatsapp me-1"></i> فتح واتساب وإرسال فوراً
+                </a>
+            </div>
+
+            <div class="bg-light p-3 rounded-3 small text-muted font-monospace mb-3" style="white-space: pre-line;">{{ wa_text }}</div>
+
+            <div class="d-flex gap-2">
+                <button class="btn btn-outline-success btn-sm rounded-pill px-3" onclick="copyWaText()">
+                    <i class="fa-regular fa-copy me-1"></i> نسخ نص الرسالة
+                </button>
+                <a href="{{ wa_link }}" target="_blank" class="btn btn-success btn-sm rounded-pill px-3">
+                    <i class="fa-solid fa-paper-plane me-1"></i> إرسال عبر واتساب ويب
+                </a>
+            </div>
+        </div>
+
+        <!-- Actions Row -->
+        <div class="text-center d-flex justify-content-center gap-3">
+            <a href="{{ url_for('generate_license_view') }}" class="btn btn-outline-teal rounded-pill px-4">
+                <i class="fa-solid fa-plus me-1"></i> إصدار ترخيص لعيادة أخرى
+            </a>
+            <a href="{{ url_for('dashboard') }}" class="btn btn-navy text-white rounded-pill px-4">
+                <i class="fa-solid fa-gauge me-1"></i> العودة للوحة التحكم
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    function copyToken() {
+        var copyText = document.getElementById("tokenBox");
+        copyText.select();
+        copyText.setSelectionRange(0, 99999);
+        navigator.clipboard.writeText(copyText.value);
+        alert("تم نسخ رمز الترخيص بنجاح!");
+    }
+
+    function copyWaText() {
+        var text = `{{ wa_text }}`;
+        navigator.clipboard.writeText(text);
+        alert("تم نسخ نص رسالة واتساب بنجاح!");
+    }
+</script>
+{% endblock %}

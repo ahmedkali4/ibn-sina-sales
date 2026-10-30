@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block title %}إصدار مفتاح تفعيل معتمد{% endblock %}
+
+{% block content %}
+<div class="row align-items-center mb-4">
+    <div class="col-md-7">
+        <h3 class="fw-bold text-navy mb-1">
+            <i class="fa-solid fa-key text-teal me-2"></i> مولد التراخيص الطبية المعتمدة (License Key Generator)
+        </h3>
+        <p class="text-muted mb-0 small">توليد شفرات تفعيل مشفرة وموقعة رقمياً متوافقة بنسبة 100% مع محرك تراخيص منظومة الطبيب</p>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="bg-white p-4 p-md-5 rounded-4 border shadow-sm">
+            <form action="{{ url_for('generate_license_view') }}" method="POST">
+                <!-- If prefill client exists -->
+                {% if prefill %}
+                    <input type="hidden" name="client_id" value="{{ prefill.id }}">
+                    <div class="alert alert-info py-2 px-3 small rounded-3 mb-4">
+                        <i class="fa-solid fa-circle-check me-1"></i> يتم إصدار الترخيص للعيادة المسجلة: <strong>{{ prefill.clinic_name }}</strong> (د. {{ prefill.doctor_name }})
+                    </div>
+                {% else %}
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold">ربط بعيادة مسجلة مسبقاً (اختياري):</label>
+                        <select name="client_id" class="form-select" onchange="autoFillClient(this)">
+                            <option value="">-- إصدار ترخيص حر / بدون ربط مسبق --</option>
+                            {% for c in all_clients %}
+                                <option value="{{ c.id }}" data-clinic="{{ c.clinic_name }}" data-doctor="{{ c.doctor_name }}" data-mid="{{ c.machine_id }}" data-spec="{{ c.specialty }}">
+                                    {{ c.clinic_name }} ({{ c.doctor_name }}) - {{ c.machine_id }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                {% endif %}
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold">اسم العيادة أو المركز الطبي: *</label>
+                        <input type="text" id="clinicNameInput" name="clinic_name" class="form-control" value="{{ prefill.clinic_name if prefill else '' }}" placeholder="مركز الأمل لجراحة العظام" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold">اسم الطبيب المسؤول:</label>
+                        <input type="text" id="doctorNameInput" name="doctor_name" class="form-control" value="{{ prefill.doctor_name if prefill else '' }}" placeholder="د. أحمد مبروك">
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label small fw-bold">كود جهاز الكمبيوتر (Machine ID): *</label>
+                        <input type="text" id="machineIdInput" name="machine_id" class="form-control font-monospace text-uppercase" value="{{ prefill.machine_id if prefill else '' }}" placeholder="MED-XXXX-XXXX-XXXX-XXXX" required>
+                        <small class="text-muted fs-8">الكود المكون من 16 حرفاً المعروض في شاشة التفعيل بجهاز العيادة.</small>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold">نوع وباقة النظام:</label>
+                        <select name="license_type" class="form-select">
+                            <option value="FULL" {% if prefill and prefill.current_edition == 'FULL' %}selected{% endif %}>باقة العيادة الشاملة (FULL)</option>
+                            <option value="CENTER" {% if prefill and prefill.current_edition == 'CENTER' %}selected{% endif %}>باقة المركز الطبي المتعدد (CENTER)</option>
+                            <option value="LITE">باقة العيادة البسيطة (LITE)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold">مدة صلاحية الترخيص:</label>
+                        <select name="duration_type" class="form-select" id="durationSelect" onchange="toggleCustomDays(this.value)">
+                            <option value="LIFETIME">دائم مدى الحياة (LIFETIME)</option>
+                            <option value="1_YEAR">اشتراك سنوي (سنة كاملة)</option>
+                            <option value="6_MONTHS">اشتراك نصف سنوي (6 أشهر)</option>
+                            <option value="3_MONTHS">اشتراك ربع سنوي (3 أشهر)</option>
+                            <option value="30_DAYS">نسخة تجريبية موسعة (30 يوماً)</option>
+                            <option value="CUSTOM">تحديد عدد أيام مخصص...</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 d-none" id="customDaysCol">
+                        <label class="form-label small fw-bold">عدد الأيام المخصصة:</label>
+                        <input type="number" name="custom_days" class="form-control" placeholder="مثال: 45">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold">التخصص الطبي:</label>
+                        <input type="text" id="specInput" name="specialty" class="form-control" value="{{ prefill.specialty if prefill else 'طب عام' }}">
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label small fw-bold">ملاحظات إضافية:</label>
+                        <textarea name="notes" class="form-control" rows="2" placeholder="ملاحظات التعاقد أو كود المندوب..."></textarea>
+                    </div>
+                </div>
+
+                <div class="pt-3 border-top text-end">
+                    <button type="submit" class="btn btn-teal rounded-pill px-5 py-3 fw-bold fs-6 shadow">
+                        <i class="fa-solid fa-key me-2"></i> توليد المفتاح وتجهيز رسالة واتساب للطبيب
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function autoFillClient(selectElem) {
+        var opt = selectElem.options[selectElem.selectedIndex];
+        if (opt && opt.value) {
+            document.getElementById('clinicNameInput').value = opt.getAttribute('data-clinic') || '';
+            document.getElementById('doctorNameInput').value = opt.getAttribute('data-doctor') || '';
+            document.getElementById('machineIdInput').value = opt.getAttribute('data-mid') || '';
+            document.getElementById('specInput').value = opt.getAttribute('data-spec') || '';
+        }
+    }
+
+    function toggleCustomDays(val) {
+        var col = document.getElementById('customDaysCol');
+        if (val === 'CUSTOM') {
+            col.classList.remove('d-none');
+        } else {
+            col.classList.add('d-none');
+        }
+    }
+</script>
+{% endblock %}

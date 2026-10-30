@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+
+{% block title %}المندوبين وسفراء المبيعات الطبية{% endblock %}
+
+{% block content %}
+<div class="row align-items-center mb-4">
+    <div class="col-md-7">
+        <h3 class="fw-bold text-navy mb-1">
+            <i class="fa-solid fa-briefcase text-teal me-2"></i> المندوبين وسفراء المبيعات الطبية
+        </h3>
+        <p class="text-muted mb-0 small">إدارة مناديب الدعاية الطبية الميدانية، حساب العمولات، ومتابعة الأرباح</p>
+    </div>
+    <div class="col-md-5 text-md-end mt-3 mt-md-0">
+        <button class="btn btn-teal rounded-pill px-4 py-2 fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#addRepModal">
+            <i class="fa-solid fa-plus me-1"></i> إضافة مندوب مبيعات جديد
+        </button>
+    </div>
+</div>
+
+<!-- Reps Table -->
+<div class="bg-white rounded-4 border shadow-sm overflow-hidden">
+    {% if reps %}
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light text-muted small">
+                <tr>
+                    <th>اسم المندوب</th>
+                    <th>كود المندوب الترويجي</th>
+                    <th>الهاتف والمدينة</th>
+                    <th>منطقة التغطية والمستشفيات</th>
+                    <th>العيادات المتعاقدة</th>
+                    <th>إجمالي العمولات</th>
+                    <th>المستحق للمندوب</th>
+                    <th class="text-center">تواصل</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in reps %}
+                <tr>
+                    <td>
+                        <div class="fw-bold text-navy">{{ r.name }}</div>
+                        <small class="text-muted">{{ r.email or '-' }}</small>
+                    </td>
+                    <td>
+                        <span class="badge bg-secondary-subtle text-secondary font-monospace">{{ r.rep_code }}</span>
+                    </td>
+                    <td>
+                        <div dir="ltr" class="text-end font-monospace">{{ r.phone }}</div>
+                        <small class="text-muted">{{ r.city or 'القاهرة' }}</small>
+                    </td>
+                    <td><small class="text-muted">{{ r.coverage_area or 'جميع المناطق' }}</small></td>
+                    <td>
+                        <span class="badge bg-primary rounded-pill px-2 py-1">{{ r.clients_count }} عيادات</span>
+                    </td>
+                    <td class="fw-bold text-success">{{ "{:,.0f}".format(r.total_commissions) }} ج.م</td>
+                    <td class="fw-bold text-danger">{{ "{:,.0f}".format(r.due_commissions) }} ج.م</td>
+                    <td class="text-center">
+                        <a href="https://wa.me/2{{ r.phone|replace(' ', '')|replace('-', '') }}" target="_blank" class="btn btn-sm btn-success rounded-circle" title="واتساب">
+                            <i class="fa-brands fa-whatsapp"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="text-center py-5 text-muted">
+        <i class="fa-solid fa-briefcase fs-1 mb-3 opacity-25"></i>
+        <h5>لا يوجد مناديب مبيعات مسجلين بعد</h5>
+        <p class="small">يمكنك إضافة أول مندوب مبيعات ومتابعة عمولاته من خلال زر الإضافة أعلاه.</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Add Rep Modal -->
+<div class="modal fade" id="addRepModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow">
+            <div class="modal-header bg-navy text-white border-0 py-3">
+                <h5 class="modal-title fw-bold"><i class="fa-solid fa-user-tie text-teal me-2"></i> إضافة مندوب مبيعات جديد</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ url_for('add_rep') }}" method="POST">
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">اسم المندوب: *</label>
+                        <input type="text" name="name" class="form-control" placeholder="محمود فوزي" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">رقم الهاتف (واتساب): *</label>
+                        <input type="tel" name="phone" class="form-control text-start" dir="ltr" placeholder="010XXXXXXXX" required>
+                    </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label class="form-label small fw-bold">المحافظة / المدينة:</label>
+                            <input type="text" name="city" class="form-control" value="القاهرة">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small fw-bold">كود المندوب الترويجي:</label>
+                            <input type="text" name="rep_code" class="form-control font-monospace text-uppercase" placeholder="تلقائي إن ترك فارغاً">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">منطقة التغطية والمستشفيات:</label>
+                        <input type="text" name="coverage_area" class="form-control" placeholder="مدينة نصر والتجمع الخامس، المستشفيات الخاصة">
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label small fw-bold">ملاحظات إضافية:</label>
+                        <textarea name="notes" class="form-control" rows="2"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 p-4 pt-0">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="submit" class="btn btn-teal rounded-pill px-4 fw-bold">حفظ المندوب</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

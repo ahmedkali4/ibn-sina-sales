@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منظومة ابن سينا - البرنامج الطبي الشامل لإدارة العيادات والمراكز الطبية في مصر</title>
+    <!-- Bootstrap 5 RTL -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css">
+    <!-- FontAwesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Cairo Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <meta name="theme-color" content="#0b2545">
+
+    <style>
+        :root {
+            --primary-navy: #0b2545;
+            --secondary-navy: #134074;
+            --accent-teal: #0d9488;
+            --teal-hover: #0f766e;
+            --accent-emerald: #10b981;
+            --gold-accent: #f59e0b;
+            --soft-bg: #f8fafc;
+            --text-dark: #1e293b;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--soft-bg);
+            color: var(--text-dark);
+            overflow-x: hidden;
+        }
+
+        .bg-navy { background-color: var(--primary-navy) !important; }
+        .text-teal { color: var(--accent-teal) !important; }
+        .text-emerald { color: var(--accent-emerald) !important; }
+        .text-gold { color: var(--gold-accent) !important; }
+
+        .btn-teal {
+            background: linear-gradient(135deg, #0d9488 0%, #10b981 100%);
+            color: #ffffff;
+            font-weight: 700;
+            border: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(13, 148, 136, 0.35);
+        }
+        .btn-teal:hover {
+            background: linear-gradient(135deg, #0f766e 0%, #059669 100%);
+            color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(13, 148, 136, 0.45);
+        }
+
+        .btn-outline-teal {
+            border: 2px solid var(--accent-teal);
+            color: var(--accent-teal);
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+        .btn-outline-teal:hover {
+            background-color: var(--accent-teal);
+            color: #ffffff;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            background: radial-gradient(circle at 85% 15%, #134074 0%, #0b2545 75%);
+            padding: 70px 0 90px 0;
+            position: relative;
+        }
+
+        .hero-badge {
+            background: rgba(13, 148, 136, 0.2);
+            border: 1px solid rgba(13, 148, 136, 0.5);
+            color: #5eead4;
+            font-size: 0.95rem;
+            padding: 6px 18px;
+            border-radius: 50px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .admin-banner {
+            background: #1e1b4b;
+            color: #cbd5e1;
+            font-size: 0.9rem;
+            border-bottom: 2px solid #818cf8;
+            padding: 8px 16px;
+        }
+
+        .feature-card {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 32px 24px;
+            transition: all 0.3s ease;
+            border: 1px solid #e2e8f0;
+            height: 100%;
+        }
+        .feature-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 16px 36px rgba(11, 37, 69, 0.08);
+            border-color: var(--accent-teal);
+        }
+
+        .icon-box {
+            width: 65px;
+            height: 65px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+
+        .icon-box-teal { background: #ccfbf1; color: #0f766e; }
+        .icon-box-blue { background: #e0f2fe; color: #0369a1; }
+        .icon-box-green { background: #dcfce7; color: #15803d; }
+        .icon-box-amber { background: #fef3c7; color: #b45309; }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 16px;
+            padding: 24px 20px;
+            backdrop-filter: blur(10px);
+            text-align: center;
+        }
+
+        .pricing-card {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 40px 30px;
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .pricing-card.featured {
+            border-color: var(--accent-teal);
+            box-shadow: 0 12px 35px rgba(13, 148, 136, 0.15);
+        }
+        .pricing-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .floating-whatsapp {
+            position: fixed;
+            bottom: 25px;
+            left: 25px;
+            background: #25d366;
+            color: #ffffff;
+            width: 62px;
+            height: 62px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            box-shadow: 0 6px 20px rgba(37, 211, 102, 0.45);
+            z-index: 9999;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        .floating-whatsapp:hover {
+            transform: scale(1.1);
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Option 1: Admin Banner if admin is viewing (or detected by client storage) -->
+    <div id="adminNoticeBar" class="admin-banner text-center {% if not is_admin %}d-none{% endif %}">
+        <div class="container d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <div>
+                <i class="fa-solid fa-user-shield text-info me-2"></i>
+                <strong>وضع الإدارة نشط:</strong> أنت تتصفح بصفتك مالك المنظومة، ولن يتم احتساب زياراتك أو نقراتك في إحصائيات الزوار.
+            </div>
+            <div class="d-flex gap-2">
+                <a href="{{ url_for('dashboard') }}" class="btn btn-info btn-sm rounded-pill px-3 py-1 fw-bold text-dark">
+                    <i class="fa-solid fa-gauge me-1"></i> لوحة التحكم
+                </a>
+                <a href="{{ url_for('clear_admin_cookie') }}" class="btn btn-outline-light btn-sm rounded-pill px-3 py-1">
+                    <i class="fa-solid fa-eye me-1"></i> تصفح كزائر عادي
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Header -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-navy sticky-top shadow-sm py-3">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="/">
+                <div class="bg-teal text-white p-2 rounded-3 d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
+                    <i class="fa-solid fa-stethoscope fs-4"></i>
+                </div>
+                <div>
+                    <span class="fw-bold fs-4 text-white">منظومة ابن سينا</span>
+                    <span class="badge bg-emerald text-dark fw-bold ms-1">الإصدار الشامل 2026</span>
+                </div>
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navMenu">
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-lg-3">
+                    <li class="nav-item"><a class="nav-link text-white fw-semibold" href="#features">مميزات المنظومة</a></li>
+                    <li class="nav-item"><a class="nav-link text-white fw-semibold" href="#medicines">بنك الأدوية المصري</a></li>
+                    <li class="nav-item"><a class="nav-link text-white fw-semibold" href="#calculator">حاسبة التوفير للعيادة</a></li>
+                    <li class="nav-item"><a class="nav-link text-white fw-semibold" href="#pricing">باقات الترخيص</a></li>
+                    <li class="nav-item"><a class="nav-link text-white fw-semibold" href="#faq">الأسئلة الشائعة</a></li>
+                </ul>
+
+                <div class="d-flex align-items-center gap-2">
+                    <a href="tel:{{ sales_phone }}" class="btn btn-outline-light rounded-pill px-3 py-2 fw-bold d-none d-xl-inline-flex align-items-center gap-2">
+                        <i class="fa-solid fa-phone text-teal"></i> {{ sales_phone }}
+                    </a>
+                    <button class="btn btn-teal rounded-pill px-4 py-2" data-bs-toggle="modal" data-bs-target="#leadModal">
+                        <i class="fa-solid fa-calendar-check me-1"></i> طلب تجربة مجانية
+                    </button>
+                    <!-- Discreet admin portal link -->
+                    <a href="{{ url_for('login') }}" class="btn btn-sm btn-link text-white-50 text-decoration-none" title="دخول إدارة المبيعات">
+                        <i class="fa-solid fa-lock"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero-section text-white">
+        <div class="container">
+            <div class="row align-items-center gy-5">
+                <div class="col-lg-7 text-center text-lg-end">
+                    <div class="hero-badge mb-3">
+                        <i class="fa-solid fa-shield-virus"></i> البرنامج الطبي المعتمد لإدارة العيادات في مصر 2026
+                    </div>
+                    <h1 class="display-4 fw-bold lh-base mb-4">
+                        المنظومة الطبية الأولى المتكاملة لإدارة <span class="text-teal">العيادات والمراكز التخصصية</span>
+                    </h1>
+                    <p class="fs-5 text-light opacity-90 mb-4 lh-lg">
+                        وداعاً للاشتراكات الشهرية الباهظة وبطء شبكة الإنترنت! منظومة تعمل محلياً 100% بكفاءة مطلقة، مزودة بأكبر بنك أدوية مصري (25,133 دواء ببدائلها)، محرك فحص التعارضات، وروشتة ذكية بضغطة زر مع تطبيق موبايل للتمريض.
+                    </p>
+
+                    <div class="d-flex flex-wrap justify-content-center justify-content-lg-start gap-3 mb-4">
+                        <a href="/download" class="btn btn-teal btn-lg px-4 py-3 rounded-pill fs-6 shadow">
+                            <i class="fa-solid fa-download me-2"></i> حمّل نسختك التجريبية الآن مجاناً
+                        </a>
+                        <button class="btn btn-outline-light btn-lg px-4 py-3 rounded-pill fs-6" data-bs-toggle="modal" data-bs-target="#leadModal">
+                            <i class="fa-solid fa-stethoscope me-2"></i> حجز جلسة استشارة وعرض توضيحي
+                        </button>
+                    </div>
+
+                    <div class="d-flex flex-wrap justify-content-center justify-content-lg-start align-items-center gap-4 text-white-50 small">
+                        <span><i class="fa-solid fa-circle-check text-emerald me-1"></i> ترخيص دائم مدى الحياة</span>
+                        <span><i class="fa-solid fa-circle-check text-emerald me-1"></i> يعمل دون إنترنت (Offline)</span>
+                        <span><i class="fa-solid fa-circle-check text-emerald me-1"></i> دعم فني وتدريب مجاني</span>
+                    </div>
+                </div>
+
+                <!-- Key Hero Stats -->
+                <div class="col-lg-5">
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <div class="stat-box">
+                                <i class="fa-solid fa-pills fs-2 text-teal mb-2"></i>
+                                <h3 class="fw-bold mb-1">25,133</h3>
+                                <p class="text-white-50 mb-0 small">دواء مصري بالبدائل</p>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="stat-box">
+                                <i class="fa-solid fa-triangle-exclamation fs-2 text-warning mb-2"></i>
+                                <h3 class="fw-bold mb-1">100%</h3>
+                                <p class="text-white-50 mb-0 small">فحص التعارض والحساسية</p>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="stat-box">
+                                <i class="fa-solid fa-wifi-slash fs-2 text-emerald mb-2"></i>
+                                <h3 class="fw-bold mb-1">0%</h3>
+                                <p class="text-white-50 mb-0 small">اعتماد على الإنترنت</p>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="stat-box">
+                                <i class="fa-solid fa-stopwatch fs-2 text-info mb-2"></i>
+                                <h3 class="fw-bold mb-1">30 ثانية</h3>
+                                <p class="text-white-50 mb-0 small">لطباعة الروشتة وتوجيه المريض</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Medical Features Section -->
+    <section id="features" class="py-5 my-4">
+        <div class="container py-4">
+            <div class="text-center max-w-700 mx-auto mb-5">
+                <span class="badge bg-teal-subtle text-teal px-3 py-2 rounded-pill fw-bold mb-2">مميزات هندسية وطبية حصرية</span>
+                <h2 class="display-6 fw-bold text-navy">مصممة خصيصاً لتلائم طبيعة العيادات والمراكز في مصر</h2>
+                <p class="text-muted">حلول عملية ترفع كفاءة العيادة، تمنع الأخطاء الطبية، وتضبط الحسابات والشيفتات بنسبة 100%</p>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card">
+                        <div class="icon-box icon-box-teal">
+                            <i class="fa-solid fa-capsules"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3">بنك الأدوية المصري وبدائلها</h4>
+                        <p class="text-muted leading-relaxed">
+                            قاعدة بيانات ضخمة تحتوي على 25,133 دواء مسجل بالمادة الفعالة والجرعات. يمنحك البرنامج البدائل الأرخص والمثائل المتاحة فوراً بنقرة واحدة لتسهيل وصف العلاج المناسب للمريض.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card">
+                        <div class="icon-box icon-box-amber">
+                            <i class="fa-solid fa-shield-virus"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3">محرك كشف التعارض والحساسية</h4>
+                        <p class="text-muted leading-relaxed">
+                            أمان مطلق للمريض وسمعة العيادة! يقوم النظام تلقائياً وبشكل فوري بفحص أي حساسية دوائية مسجلة في ملف المريض، وتنبيه الطبيب في شاشة الروشتة قبل اعتماد أي دواء يتعارض مع حالته.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card">
+                        <div class="icon-box icon-box-green">
+                            <i class="fa-solid fa-file-prescription"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3">الروشتة الذكية وواتساب</h4>
+                        <p class="text-muted leading-relaxed">
+                            طباعة روشتات أنيقة تحمل شعار واسم عيادتك، مع بروتوكولات علاجية جاهزة بضغطة زر للتخصصات المختلفة. كما يمكنك إرسال الروشتة مباشرة إلى واتساب المريض مع تعليمات الجرعات.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card">
+                        <div class="icon-box icon-box-blue">
+                            <i class="fa-solid fa-cash-register"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3">تقفيل الشيفت ودرج النقدية</h4>
+                        <p class="text-muted leading-relaxed">
+                            انضباط مالي دقيق يمنع أي عجز أو تلاعب! تقفيل تلقائي للشيفت يوضح إجمالي الكشوفات، الاستشارات، الخدمات والعمليات، المصروفات النثرية، وتوزيع نسب الأطباء وصافي رصيد الدرج.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card">
+                        <div class="icon-box icon-box-teal">
+                            <i class="fa-solid fa-mobile-screen-button"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3">تطبيق موبايل للتمريض والطبيب</h4>
+                        <p class="text-muted leading-relaxed">
+                            ربط لاسلكي ذكي داخل العيادة دون إنترنت! تستطيع الممرضة تسجيل المرضى وسحب التذاكر عبر هاتفها، بينما يرى الطبيب قائمة الانتظار الحالية والملف الطبي بوضوح على شاشته.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card">
+                        <div class="icon-box icon-box-green">
+                            <i class="fa-solid fa-hard-drive"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3">أمان تام بدون اشتراكات سحابية</h4>
+                        <p class="text-muted leading-relaxed">
+                            بيانات مرضاك وحساباتك سرية ومخزنة بالكامل على جهاز العيادة (Offline-First). لن يتوقف العمل عند انقطاع الإنترنت، ولن تدفع رسوماً شهرية متكررة ترهق ميزانية العيادة.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Medicine Bank Showcase -->
+    <section id="medicines" class="py-5 bg-navy text-white">
+        <div class="container py-4">
+            <div class="row align-items-center gy-4">
+                <div class="col-lg-6">
+                    <span class="hero-badge mb-3"><i class="fa-solid fa-database"></i> محرك الأدوية المعتمد</span>
+                    <h2 class="display-6 fw-bold mb-4">أقوى بنك أدوية مصري متكامل ومحدث</h2>
+                    <p class="text-light opacity-90 fs-5 mb-4 leading-relaxed">
+                        تم تزويد منظومة ابن سينا بقاعدة بيانات مفهرسة بالكامل تضم <strong>25,133 دواء</strong> متداولاً في السوق المصري.
+                    </p>
+                    <ul class="list-unstyled d-flex flex-column gap-3 text-light">
+                        <li class="d-flex align-items-center gap-3">
+                            <i class="fa-solid fa-check-double text-teal fs-4"></i>
+                            <span>بحث لحظي بالاسم التجاري أو الاسم العلمي (المادة الفعالة).</span>
+                        </li>
+                        <li class="d-flex align-items-center gap-3">
+                            <i class="fa-solid fa-check-double text-teal fs-4"></i>
+                            <span>عرض فوري للبدائل الأرخص بالسعر المصري لحماية ميزانية المريض.</span>
+                        </li>
+                        <li class="d-flex align-items-center gap-3">
+                            <i class="fa-solid fa-check-double text-teal fs-4"></i>
+                            <span>إمكانية إضافة أدوية وتركيبات خاصة بعيادتك بنقرة واحدة.</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-lg-6">
+                    <div class="bg-white text-dark p-4 rounded-4 shadow-lg">
+                        <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3">
+                            <div class="fw-bold text-navy"><i class="fa-solid fa-magnifying-glass me-2 text-teal"></i> محاكاة شاشة البحث الذكي</div>
+                            <span class="badge bg-success-subtle text-success">محدث 2026</span>
+                        </div>
+                        <div class="p-3 bg-light rounded-3 mb-3 border">
+                            <small class="text-muted d-block mb-1">الدواء المختار في الروشتة:</small>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="fw-bold text-primary fs-5">Augmentin 1gm Tab</span>
+                                <span class="badge bg-primary">مضاد حيوي</span>
+                            </div>
+                            <div class="small text-muted mt-1">المادة الفعالة: Amoxicillin + Clavulanic acid</div>
+                        </div>
+                        <div class="alert alert-info border-0 py-2 small mb-3">
+                            <i class="fa-solid fa-lightbulb me-1"></i> <strong>البدائل الأرخص المتوفرة:</strong>
+                            <div class="mt-1 d-flex flex-wrap gap-2">
+                                <span class="badge bg-white text-dark border">Curam 1gm (وفر 35 ج.م)</span>
+                                <span class="badge bg-white text-dark border">Megamox 1gm (وفر 40 ج.م)</span>
+                                <span class="badge bg-white text-dark border">Klavox 1gm</span>
+                            </div>
+                        </div>
+                        <div class="p-3 bg-success-subtle rounded-3 border border-success-subtle d-flex align-items-center gap-2 text-success small">
+                            <i class="fa-solid fa-circle-check fs-5"></i>
+                            <span>تم فحص ملف المريض: لا يوجد أي حساسية للبنسيلين مسجلة (آمن للصرف).</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ROI & Savings Calculator -->
+    <section id="calculator" class="py-5 my-4">
+        <div class="container py-4">
+            <div class="text-center max-w-700 mx-auto mb-5">
+                <span class="badge bg-teal-subtle text-teal px-3 py-2 rounded-pill fw-bold mb-2">حاسبة العائد المالي</span>
+                <h2 class="display-6 fw-bold text-navy">احسب توفير عيادتك مع منظومة ابن سينا</h2>
+                <p class="text-muted">مقارنة التكلفة والوقت بين منظومة ابن سينا مدى الحياة والأنظمة السحابية ذات الاشتراك الشهري</p>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="bg-white p-4 p-md-5 rounded-4 shadow-sm border">
+                        <div class="mb-4">
+                            <label class="form-label fw-bold d-flex justify-content-between">
+                                <span>متوسط عدد حالات الكشف اليومية بالعيادة:</span>
+                                <span id="patientsVal" class="text-teal fs-5 fw-bold">25 مريض</span>
+                            </label>
+                            <input type="range" class="form-range" id="patientsRange" min="5" max="80" value="25" oninput="updateCalculator()">
+                        </div>
+
+                        <div class="row g-3 text-center pt-3 border-top">
+                            <div class="col-md-4">
+                                <div class="p-3 bg-light rounded-3">
+                                    <div class="text-muted small mb-1">الوقت الموفر يومياً</div>
+                                    <h4 class="fw-bold text-navy mb-0" id="hoursSaved">1.5 ساعة</h4>
+                                    <small class="text-success">في كتابة الروشتات والملفات</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="p-3 bg-light rounded-3">
+                                    <div class="text-muted small mb-1">توفير الاشتراكات السنوية</div>
+                                    <h4 class="fw-bold text-emerald mb-0" id="moneySaved">18,000 ج.م</h4>
+                                    <small class="text-muted">مقارنة بالسيرفرات السحابية</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="p-3 bg-light rounded-3">
+                                    <div class="text-muted small mb-1">منع أخطاء الصرف والعجز</div>
+                                    <h4 class="fw-bold text-primary mb-0">100%</h4>
+                                    <small class="text-muted">انضباط مالي وطبي تام</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-center mt-4 pt-2">
+                            <button class="btn btn-teal rounded-pill px-5 py-2 fw-bold" data-bs-toggle="modal" data-bs-target="#leadModal">
+                                ابدأ توفير وقت عيادتك الآن
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Packages -->
+    <section id="pricing" class="py-5 bg-light">
+        <div class="container py-4">
+            <div class="text-center max-w-700 mx-auto mb-5">
+                <span class="badge bg-teal-subtle text-teal px-3 py-2 rounded-pill fw-bold mb-2">أسعار شفافة بدون مصاريف خفية</span>
+                <h2 class="display-6 fw-bold text-navy">اختر باقة الترخيص المناسبة لعيادتك</h2>
+                <p class="text-muted">تدفع مرة واحدة فقط وتمتلك البرنامج ومدى الحياة على جهازك مع تدريب مجاني</p>
+            </div>
+
+            <div class="row g-4 justify-content-center">
+                <!-- Single Clinic Plan -->
+                <div class="col-lg-5">
+                    <div class="pricing-card h-100 d-flex flex-column">
+                        <div class="text-center pb-3 border-bottom mb-4">
+                            <span class="badge bg-primary-subtle text-primary rounded-pill px-3 py-1 mb-2">للعيادات الفردية</span>
+                            <h3 class="fw-bold text-navy">باقة العيادة الشاملة</h3>
+                            <p class="text-muted small">ترخيص دائم لجهاز الطبيب والتمريض بالعيادة</p>
+                            <div class="display-5 fw-bold text-navy my-3">
+                                {{ prices.single }} <span class="fs-6 text-muted">جنيه مصري / مرة واحدة</span>
+                            </div>
+                        </div>
+
+                        <ul class="list-unstyled d-flex flex-column gap-3 mb-4 flex-grow-1 text-muted">
+                            <li><i class="fa-solid fa-check text-emerald me-2"></i> ترخيص دائم مدى الحياة بدون أي اشتراك شهري</li>
+                            <li><i class="fa-solid fa-check text-emerald me-2"></i> بنك الأدوية المصري الكامل (25,133 دواء ببدائلها)</li>
+                            <li><i class="fa-solid fa-check text-emerald me-2"></i> محرك فحص التعارضات والحساسية التلقائي</li>
+                            <li><i class="fa-solid fa-check text-emerald me-2"></i> طباعة الروشتة وإرسالها لواتساب المريض</li>
+                            <li><i class="fa-solid fa-check text-emerald me-2"></i> شاشة وحسابات درج النقدية وتقفيل الشيفت</li>
+                            <li><i class="fa-solid fa-check text-emerald me-2"></i> ربط موبايل التمريض لسحب التذاكر عبر الشبكة الداخلية</li>
+                            <li><i class="fa-solid fa-check text-emerald me-2"></i> تدريب كامل ودعم فني ونسخ احتياطي آمن</li>
+                        </ul>
+
+                        <button class="btn btn-outline-teal rounded-pill py-3 fw-bold w-100" data-bs-toggle="modal" data-bs-target="#leadModal">
+                            طلب التعاقد على الباقة الفردية
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Multi Clinic Plan -->
+                <div class="col-lg-5">
+                    <div class="pricing-card featured h-100 d-flex flex-column">
+                        <div class="position-absolute top-0 start-50 translate-middle">
+                            <span class="badge bg-teal text-white rounded-pill px-4 py-2 shadow-sm">الأكثر طلباً للمراكز</span>
+                        </div>
+                        <div class="text-center pb-3 border-bottom mb-4 mt-2">
+                            <span class="badge bg-teal-subtle text-teal rounded-pill px-3 py-1 mb-2">المراكز والمجمعات الطبية</span>
+                            <h3 class="fw-bold text-navy">باقة المركز الطبي المتعدد</h3>
+                            <p class="text-muted small">للمراكز متعددة التخصصات والغرف والأطباء</p>
+                            <div class="display-5 fw-bold text-teal my-3">
+                                {{ prices.multi }} <span class="fs-6 text-muted">جنيه مصري / مرة واحدة</span>
+                            </div>
+                        </div>
+
+                        <ul class="list-unstyled d-flex flex-column gap-3 mb-4 flex-grow-1 text-muted">
+                            <li><i class="fa-solid fa-check text-emerald me-2"></i> <strong>كل مميزات باقة العيادة الشاملة</strong></li>
+                            <li><i class="fa-solid fa-check text-emerald me-2"></i> دعم تعدد الأطباء والتخصصات والشيفتات داخل المركز</li>
+                            <li><i class="fa-solid fa-check text-emerald me-2"></i> حساب تلقائي لنسبة كل طبيب في الكشوفات والعمليات</li>
+                            <li><i class="fa-solid fa-check text-emerald me-2"></i> صلاحيات مخصصة لكل طبيب وموظف استقبال وتمريض</li>
+                            <li><i class="fa-solid fa-check text-emerald me-2"></i> شاشة الانتظار العامة لنداء المرضى</li>
+                            <li><i class="fa-solid fa-check text-emerald me-2"></i> أولوية قصوى في الدعم الفني والتدريب الميداني</li>
+                        </ul>
+
+                        <button class="btn btn-teal rounded-pill py-3 fw-bold w-100 shadow" data-bs-toggle="modal" data-bs-target="#leadModal">
+                            طلب التعاقد على باقة المركز الطبي
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Accordion -->
+    <section id="faq" class="py-5 my-4">
+        <div class="container py-4 max-w-800 mx-auto" style="max-width: 820px;">
+            <div class="text-center mb-5">
+                <span class="badge bg-teal-subtle text-teal px-3 py-2 rounded-pill fw-bold mb-2">إجابات واضحة</span>
+                <h2 class="display-6 fw-bold text-navy">الأسئلة الشائعة لأصحاب العيادات</h2>
+            </div>
+
+            <div class="accordion shadow-sm rounded-4 overflow-hidden" id="clinicFaq">
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                            هل يشترط وجود إنترنت دائم داخل العيادة لتشغيل البرنامج؟
+                        </button>
+                    </h2>
+                    <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#clinicFaq">
+                        <div class="accordion-body text-muted leading-relaxed">
+                            <strong>لا على الإطلاق!</strong> المنظومة مبنية بفلسفة التشغيل المحلي الكامل (Offline-First). جميع وظائف البرنامج من تسجيل المرضى، كتابة الروشتات، البحث في بنك الأدوية والبدائل، وحسابات الشيفت تعمل بسرعة فائقة وبدون أي حاجة للإنترنت.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                            كيف يتأكد البرنامج من تعارض الأدوية وحساسية المريض؟
+                        </button>
+                    </h2>
+                    <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#clinicFaq">
+                        <div class="accordion-body text-muted leading-relaxed">
+                            عند فتح ملف المريض لأول مرة يتم تسجيل أي حساسية دوائية يعاني منها (مثل البنسيلين أو الأسبرين). وعند اختيار الدواء أثناء الكشف، يقوم المحرك بمطابقة المواد الفعالة تلقائياً وتنبيه الطبيب فوراً بلون تحذيري لمنع حدوث أي خطأ طبي.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                            هل يمكن ربط هاتف الممرضة بالكمبيوتر لسحب التذاكر؟
+                        </button>
+                    </h2>
+                    <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#clinicFaq">
+                        <div class="accordion-body text-muted leading-relaxed">
+                            نعم بكل سهولة! يتضمن البرنامج بوابة مخصصة للموبايل تعمل عبر شبكة الواي فاي الداخلية للعيادة. تستطيع الممرضة الدخول عبر هاتفها وإدخال كشوفات المرضى دون الحاجة لشراء كمبيوتر إضافي للاستقبال.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                            ماذا لو قمت بتغيير جهاز الكمبيوتر أو اللابتوب مستقبلاً؟
+                        </button>
+                    </h2>
+                    <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#clinicFaq">
+                        <div class="accordion-body text-muted leading-relaxed">
+                            حقوقك محفوظة بالكامل! يوفر فريق الدعم الفني إمكانية نقل الترخيص لجهازك الجديد مع استرجاع قاعدة البيانات بكافة المرضى والروشتات في دقائق معدودة وبشكل مجاني تماماً.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal Lead Capture Form -->
+    <div class="modal fade" id="leadModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 border-0 shadow">
+                <div class="modal-header bg-navy text-white border-0 py-3">
+                    <h5 class="modal-title fw-bold">
+                        <i class="fa-solid fa-stethoscope text-teal me-2"></i> طلب تجربة مجانية واستشارة
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="/leads/submit" method="POST" id="leadForm">
+                    <div class="modal-body p-4">
+                        <p class="text-muted small mb-3">
+                            سجل بيانات عيادتك وسيقوم مستشار النظم الطبية بالتواصل معك لإعداد نسختك التجريبية وتدريب فريقك:
+                        </p>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small">اسم الطبيب أو المدير المسؤول: *</label>
+                            <input type="text" name="doctor_name" class="form-control" placeholder="د. أحمد محمود" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small">اسم العيادة أو المركز الطبي: *</label>
+                            <input type="text" name="clinic_name" class="form-control" placeholder="مركز الأمل التخصصي" required>
+                        </div>
+                        <div class="row g-2 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold small">التخصص الطبي:</label>
+                                <select name="specialty" class="form-select">
+                                    <option value="طب عام / باطنة">طب عام / باطنة</option>
+                                    <option value="أطفال وحديثي الولادة">أطفال وحديثي الولادة</option>
+                                    <option value="عظام ومفاصل">عظام ومفاصل</option>
+                                    <option value="نساء وتوليد">نساء وتوليد</option>
+                                    <option value="أسنان">طب وجراحة الأسنان</option>
+                                    <option value="جلدية وتجميل">جلدية وتجميل</option>
+                                    <option value="أنف وأذن وحنجرة">أنف وأذن وحنجرة</option>
+                                    <option value="عيون">طب وجراحة العيون</option>
+                                    <option value="جراحة عامة">جراحة عامة</option>
+                                    <option value="مركز متعدد التخصصات">مركز متعدد التخصصات</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold small">المحافظة / المدينة:</label>
+                                <input type="text" name="city" class="form-control" placeholder="القاهرة / المنصورة / الإسكندرية">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small">رقم الهاتف (واتساب): *</label>
+                            <input type="tel" name="phone" class="form-control text-start" dir="ltr" placeholder="010XXXXXXXX" required>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label fw-bold small">ملاحظات أو متطلبات خاصة:</label>
+                            <textarea name="notes" class="form-control" rows="2" placeholder="عدد الغرف، رغبة في ربط معمل، إلخ..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 p-4 pt-0">
+                        <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">إلغاء</button>
+                        <button type="submit" class="btn btn-teal rounded-pill px-4 fw-bold">
+                            <i class="fa-solid fa-paper-plane me-1"></i> إرسال الطلب الآن
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating WhatsApp -->
+    <a href="https://wa.me/{{ sales_whatsapp }}?text={{ 'مرحباً، أود الاستفسار عن منظومة ابن سينا لإدارة العيادات والمراكز الطبية'|urlencode }}" target="_blank" class="floating-whatsapp" title="تواصل عبر واتساب">
+        <i class="fa-brands fa-whatsapp"></i>
+    </a>
+
+    <!-- Footer -->
+    <footer class="bg-navy text-white py-4 border-top border-light border-opacity-10">
+        <div class="container text-center">
+            <div class="d-flex align-items-center justify-content-center gap-2 mb-2">
+                <i class="fa-solid fa-stethoscope text-teal fs-5"></i>
+                <span class="fw-bold fs-5">منظومة ابن سينا لإدارة العيادات والمراكز الطبية</span>
+            </div>
+            <p class="text-white-50 small mb-2">جميع الحقوق محفوظة © 2026 - المطور والمالك: Ahmed Mabrouk</p>
+            <div class="text-white-50 small">
+                للمبيعات والدعم الفني المباشر: <a href="tel:{{ sales_phone }}" class="text-teal text-decoration-none fw-bold">{{ sales_phone }}</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Option 1: Client-Side Admin Detection & Non-Admin Tracking -->
+    <script>
+        (function() {
+            // Check if admin token is present in localStorage or cookies
+            var isAdminToken = localStorage.getItem('al_tabeeb_admin_token') === '1';
+            var hasAdminCookie = document.cookie.indexOf('al_tabeeb_admin=1') !== -1;
+
+            if (isAdminToken || hasAdminCookie) {
+                // Ensure admin notice bar is visible
+                var adminBar = document.getElementById('adminNoticeBar');
+                if (adminBar) {
+                    adminBar.classList.remove('d-none');
+                }
+                console.log("[Option 1 Active]: Admin session detected. Visitor tracking suppressed.");
+                return; // Do NOT send any visitor ping!
+            }
+
+            // For genuine visitors: record detailed client-side interactions
+            window.recordInteraction = function(actionType) {
+                try {
+                    fetch('/api/track', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ event_type: actionType })
+                    });
+                } catch(e) {}
+            };
+        })();
+
+        // Savings Calculator Function
+        function updateCalculator() {
+            var patients = parseInt(document.getElementById('patientsRange').value);
+            document.getElementById('patientsVal').innerText = patients + " مريض";
+
+            var hours = (patients * 0.06).toFixed(1);
+            document.getElementById('hoursSaved').innerText = hours + " ساعة";
+
+            var money = Math.round(12000 + (patients * 350));
+            document.getElementById('moneySaved').innerText = money.toLocaleString() + " ج.م";
+        }
+    </script>
+</body>
+</html>

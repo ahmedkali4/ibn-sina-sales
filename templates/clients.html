@@ -1,0 +1,227 @@
+{% extends 'base.html' %}
+
+{% block title %}العيادات والمراكز المشتركة{% endblock %}
+
+{% block content %}
+<div class="row align-items-center mb-4">
+    <div class="col-md-7">
+        <h3 class="fw-bold text-navy mb-1">
+            <i class="fa-solid fa-hospital text-teal me-2"></i> العيادات والمراكز الطبية المشتركة
+        </h3>
+        <p class="text-muted mb-0 small">إدارة ملفات الأطباء، التراخيص المعتمدة، الأجهزة المسجلة، والأقساط المالية</p>
+    </div>
+    <div class="col-md-5 text-md-end mt-3 mt-md-0">
+        <button class="btn btn-teal rounded-pill px-4 py-2 fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#addClientModal">
+            <i class="fa-solid fa-plus me-1"></i> تسجيل تعاقد عيادة جديدة
+        </button>
+    </div>
+</div>
+
+<!-- Search Bar -->
+<div class="bg-white p-3 rounded-4 border shadow-sm mb-4">
+    <form method="GET" class="row g-2">
+        <div class="col-md-10">
+            <div class="input-group">
+                <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+                <input type="text" name="search" class="form-control border-start-0" placeholder="بحث باسم العيادة، اسم الطبيب، كود الجهاز (Machine ID)، أو الهاتف..." value="{{ search }}">
+            </div>
+        </div>
+        <div class="col-md-2 d-flex gap-2">
+            <button type="submit" class="btn btn-teal w-100 rounded-3 fw-bold">بحث</button>
+            {% if search %}
+                <a href="{{ url_for('clients_list') }}" class="btn btn-outline-secondary rounded-3">مسح</a>
+            {% endif %}
+        </div>
+    </form>
+</div>
+
+<!-- Clients Table -->
+<div class="bg-white rounded-4 border shadow-sm overflow-hidden">
+    {% if clients %}
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light text-muted small">
+                <tr>
+                    <th>العيادة والمركز</th>
+                    <th>الطبيب والتخصص</th>
+                    <th>كود الجهاز (Machine ID)</th>
+                    <th>الباقة ونظام السداد</th>
+                    <th>الماليات (المسدد / الإجمالي)</th>
+                    <th>حالة الترخيص</th>
+                    <th class="text-center">إجراءات</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for c in clients %}
+                <tr>
+                    <td>
+                        <a href="{{ url_for('client_detail', client_id=c.id) }}" class="fw-bold text-navy text-decoration-none">
+                            {{ c.clinic_name }}
+                        </a>
+                        <small class="d-block text-muted">{{ c.city or 'القاهرة' }}</small>
+                    </td>
+                    <td>
+                        <div class="fw-semibold">{{ c.doctor_name }}</div>
+                        <span class="badge bg-light text-dark border">{{ c.specialty }}</span>
+                    </td>
+                    <td>
+                        <code class="font-monospace text-uppercase small bg-light p-1 rounded">{{ c.machine_id }}</code>
+                    </td>
+                    <td>
+                        <span class="badge bg-primary-subtle text-primary">{{ c.current_edition }}</span>
+                        <small class="d-block text-muted">{{ c.payment_model }}</small>
+                    </td>
+                    <td>
+                        <div class="fw-bold text-success">{{ "{:,.0f}".format(c.paid_amount) }} ج.م</div>
+                        <small class="text-muted">من {{ "{:,.0f}".format(c.total_price) }} ج.م</small>
+                        {% if c.remaining_amount > 0 %}
+                            <div class="text-danger small fw-bold">متبقي: {{ "{:,.0f}".format(c.remaining_amount) }}</div>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if c.status == 'نشط' %}
+                            <span class="badge bg-success-subtle text-success rounded-pill px-3 py-1">نشط ومفعل</span>
+                        {% else %}
+                            <span class="badge bg-secondary-subtle text-secondary rounded-pill px-3 py-1">{{ c.status }}</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-center">
+                        <div class="btn-group btn-group-sm">
+                            <a href="{{ url_for('client_detail', client_id=c.id) }}" class="btn btn-outline-teal" title="عرض تفاصيل العيادة والترخيص">
+                                <i class="fa-solid fa-folder-open me-1"></i> الملف
+                            </a>
+                            <a href="{{ url_for('generate_license_view', client_id=c.id) }}" class="btn btn-teal" title="إصدار ترخيص">
+                                <i class="fa-solid fa-key"></i>
+                            </a>
+                            <a href="https://wa.me/2{{ c.phone|replace(' ', '')|replace('-', '') }}" target="_blank" class="btn btn-success" title="واتساب">
+                                <i class="fa-brands fa-whatsapp"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="text-center py-5 text-muted">
+        <i class="fa-solid fa-hospital fs-1 mb-3 opacity-25"></i>
+        <h5>لا توجد عيادات مشتركة مسجلة بعد</h5>
+        <p class="small">سجل أول تعاقد طبي عبر زر الإضافة أعلاه لإصدار مفتاح الترخيص الرسمي.</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Add Client Modal -->
+<div class="modal fade" id="addClientModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow">
+            <div class="modal-header bg-navy text-white border-0 py-3">
+                <h5 class="modal-title fw-bold">
+                    <i class="fa-solid fa-file-contract text-teal me-2"></i> تسجيل تعاقد عيادة جديدة
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ url_for('add_client') }}" method="POST">
+                <div class="modal-body p-4">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">اسم الطبيب المسؤول: *</label>
+                            <input type="text" name="doctor_name" class="form-control" value="{{ request.args.get('doctor', '') }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">اسم العيادة أو المركز الطبي: *</label>
+                            <input type="text" name="clinic_name" class="form-control" value="{{ request.args.get('clinic', '') }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">التخصص الطبي:</label>
+                            <select name="specialty" class="form-select">
+                                <option value="طب عام / باطنة">طب عام / باطنة</option>
+                                <option value="أطفال وحديثي الولادة">أطفال وحديثي الولادة</option>
+                                <option value="عظام ومفاصل">عظام ومفاصل</option>
+                                <option value="نساء وتوليد">نساء وتوليد</option>
+                                <option value="أسنان">طب وجراحة الأسنان</option>
+                                <option value="جلدية وتجميل">جلدية وتجميل</option>
+                                <option value="أنف وأذن وحنجرة">أنف وأذن وحنجرة</option>
+                                <option value="عيون">طب وجراحة العيون</option>
+                                <option value="جراحة عامة">جراحة عامة</option>
+                                <option value="مركز متعدد التخصصات">مركز متعدد التخصصات</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">كود جهاز الكمبيوتر (Machine ID): *</label>
+                            <input type="text" name="machine_id" class="form-control font-monospace text-uppercase" placeholder="MED-XXXX-XXXX-XXXX-XXXX" required>
+                            <small class="text-muted fs-8">يظهر للطبيب في شاشة البرنامج عند أول تشغيل.</small>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">رقم الهاتف (واتساب): *</label>
+                            <input type="tel" name="phone" class="form-control text-start" dir="ltr" value="{{ request.args.get('phone', '') }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">البريد الإلكتروني (اختياري):</label>
+                            <input type="email" name="email" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">المحافظة / المدينة:</label>
+                            <input type="text" name="city" class="form-control" value="القاهرة">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">الباقة المشتراة:</label>
+                            <select name="current_edition" class="form-select">
+                                <option value="FULL">باقة العيادة الشاملة (ترخيص دائم)</option>
+                                <option value="CENTER">باقة المركز المتعدد (ترخيص دائم)</option>
+                                <option value="ANNUAL">اشتراك سنوي (سنة)</option>
+                            </select>
+                        </div>
+
+                        <!-- Financials -->
+                        <div class="col-12"><hr class="my-2 text-muted"></div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">إجمالي سعر التعاقد (ج.م):</label>
+                            <input type="number" step="100" name="total_price" class="form-control fw-bold text-navy" value="3500" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">المسدد نقداً / مقدم (ج.م):</label>
+                            <input type="number" step="100" name="paid_amount" class="form-control fw-bold text-success" value="3500" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">نظام السداد:</label>
+                            <select name="payment_model" class="form-select">
+                                <option value="كاش كامل">كاش كامل</option>
+                                <option value="قسطين (50% مقدم)">قسطين (50% مقدم)</option>
+                                <option value="3 أقساط">3 أقساط</option>
+                            </select>
+                        </div>
+
+                        <!-- Reps -->
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">المندوب المسؤول (إن وجد):</label>
+                            <select name="sales_rep_id" class="form-select">
+                                <option value="">بدون مندوب (مبيعات مباشرة)</option>
+                                {% for rep in reps %}
+                                    <option value="{{ rep.id }}">{{ rep.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">عمولة المندوب (ج.م):</label>
+                            <input type="number" step="50" name="rep_commission" class="form-control" value="0">
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label small fw-bold">ملاحظات التعاقد:</label>
+                            <textarea name="notes" class="form-control" rows="2" placeholder="ملاحظات التركيب، متطلبات خاصة..."></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 p-4 pt-0">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="submit" class="btn btn-teal rounded-pill px-4 fw-bold">
+                        <i class="fa-solid fa-check me-1"></i> حفظ وإصدار الترخيص
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

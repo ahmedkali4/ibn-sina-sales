@@ -1,0 +1,214 @@
+{% extends 'base.html' %}
+
+{% block title %}طلبات الأطباء والعملاء المحتملين{% endblock %}
+
+{% block content %}
+<div class="row align-items-center mb-4">
+    <div class="col-md-7">
+        <h3 class="fw-bold text-navy mb-1">
+            <i class="fa-solid fa-user-doctor text-teal me-2"></i> إدارة طلبات الأطباء والعملاء المحتملين (Leads CRM)
+        </h3>
+        <p class="text-muted mb-0 small">متابعة الاستفسارات الواردة من صفحة الهبوط والحملات الإعلانية ومحادثات واتساب</p>
+    </div>
+    <div class="col-md-5 text-md-end mt-3 mt-md-0">
+        <button class="btn btn-teal rounded-pill px-4 py-2 fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#addLeadModal">
+            <i class="fa-solid fa-user-plus me-1"></i> إضافة طبيب / عميل محتمل
+        </button>
+    </div>
+</div>
+
+<!-- Status Filters Row -->
+<div class="d-flex flex-wrap gap-2 mb-4">
+    <a href="{{ url_for('leads_list') }}" class="btn btn-sm {% if not current_status %}btn-navy text-white{% else %}btn-outline-secondary{% endif %} rounded-pill px-3">
+        جميع الحالات ({{ leads|length }})
+    </a>
+    <a href="{{ url_for('leads_list', status='جديد') }}" class="btn btn-sm {% if current_status == 'جديد' %}btn-danger text-white{% else %}btn-outline-danger{% endif %} rounded-pill px-3">
+        جديد ({{ status_counts.get('جديد', 0) }})
+    </a>
+    <a href="{{ url_for('leads_list', status='تم التواصل') }}" class="btn btn-sm {% if current_status == 'تم التواصل' %}btn-primary text-white{% else %}btn-outline-primary{% endif %} rounded-pill px-3">
+        تم التواصل ({{ status_counts.get('تم التواصل', 0) }})
+    </a>
+    <a href="{{ url_for('leads_list', status='جاري التجربة') }}" class="btn btn-sm {% if current_status == 'جاري التجربة' %}btn-warning text-dark{% else %}btn-outline-warning{% endif %} rounded-pill px-3">
+        جاري التجربة ({{ status_counts.get('جاري التجربة', 0) }})
+    </a>
+    <a href="{{ url_for('leads_list', status='تم البيع') }}" class="btn btn-sm {% if current_status == 'تم البيع' %}btn-success text-white{% else %}btn-outline-success{% endif %} rounded-pill px-3">
+        تم البيع والتعاقد ({{ status_counts.get('تم البيع', 0) }})
+    </a>
+    <a href="{{ url_for('leads_list', status='مؤجل') }}" class="btn btn-sm {% if current_status == 'مؤجل' %}btn-secondary text-white{% else %}btn-outline-secondary{% endif %} rounded-pill px-3">
+        مؤجل ({{ status_counts.get('مؤجل', 0) }})
+    </a>
+</div>
+
+<!-- Search Bar -->
+<div class="bg-white p-3 rounded-4 border shadow-sm mb-4">
+    <form method="GET" class="row g-2">
+        {% if current_status %}
+            <input type="hidden" name="status" value="{{ current_status }}">
+        {% endif %}
+        <div class="col-md-10">
+            <div class="input-group">
+                <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+                <input type="text" name="search" class="form-control border-start-0" placeholder="بحث بالاسم، اسم العيادة، رقم الهاتف، التخصص، أو المحافظة..." value="{{ search }}">
+            </div>
+        </div>
+        <div class="col-md-2 d-flex gap-2">
+            <button type="submit" class="btn btn-teal w-100 rounded-3 fw-bold">بحث</button>
+            {% if search %}
+                <a href="{{ url_for('leads_list', status=current_status) }}" class="btn btn-outline-secondary rounded-3">مسح</a>
+            {% endif %}
+        </div>
+    </form>
+</div>
+
+<!-- Leads Table -->
+<div class="bg-white rounded-4 border shadow-sm overflow-hidden">
+    {% if leads %}
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light text-muted small">
+                <tr>
+                    <th>#</th>
+                    <th>الطبيب / العيادة</th>
+                    <th>التخصص والمدينة</th>
+                    <th>الهاتف (واتساب)</th>
+                    <th>المصدر والتاريخ</th>
+                    <th>الحالة الحالية</th>
+                    <th>ملاحظات</th>
+                    <th class="text-center">إجراءات التواصل</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for lead in leads %}
+                <tr>
+                    <td class="text-muted small">{{ lead.id }}</td>
+                    <td>
+                        <div class="fw-bold text-navy">{{ lead.doctor_name }}</div>
+                        <small class="text-muted">{{ lead.clinic_name or 'عيادة خاصة' }}</small>
+                    </td>
+                    <td>
+                        <div><span class="badge bg-light text-dark border">{{ lead.specialty or 'عام' }}</span></div>
+                        <small class="text-muted">{{ lead.city or 'القاهرة' }}</small>
+                    </td>
+                    <td dir="ltr" class="text-end font-monospace fw-bold text-primary">{{ lead.phone }}</td>
+                    <td>
+                        <small class="d-block text-muted">{{ lead.source or 'صفحة الهبوط' }}</small>
+                        <small class="text-muted opacity-75">{{ lead.created_at[:10] }}</small>
+                    </td>
+                    <td>
+                        <form action="{{ url_for('update_lead_status', lead_id=lead.id) }}" method="POST">
+                            <select name="status" class="form-select form-select-sm rounded-pill fw-bold" onchange="this.form.submit()" style="min-width: 130px;">
+                                <option value="جديد" {% if lead.status == 'جديد' %}selected{% endif %}>🔴 جديد</option>
+                                <option value="تم التواصل" {% if lead.status == 'تم التواصل' %}selected{% endif %}>🔵 تم التواصل</option>
+                                <option value="جاري التجربة" {% if lead.status == 'جاري التجربة' %}selected{% endif %}>🟡 جاري التجربة</option>
+                                <option value="تم البيع" {% if lead.status == 'تم البيع' %}selected{% endif %}>🟢 تم البيع</option>
+                                <option value="مؤجل" {% if lead.status == 'مؤجل' %}selected{% endif %}>⚪ مؤجل</option>
+                                <option value="غير مهتم" {% if lead.status == 'غير مهتم' %}selected{% endif %}>⚫ غير مهتم</option>
+                            </select>
+                        </form>
+                    </td>
+                    <td>
+                        <span class="small text-muted" title="{{ lead.notes }}">{{ (lead.notes[:30] ~ '...') if lead.notes and lead.notes|length > 30 else (lead.notes or '-') }}</span>
+                    </td>
+                    <td class="text-center">
+                        <div class="btn-group btn-group-sm">
+                            <!-- WhatsApp Button with Egyptian medical pitch -->
+                            <a href="https://wa.me/2{{ lead.phone|replace(' ', '')|replace('-', '') }}?text={{ ('أهلاً بحضرتك دكتور ' ~ lead.doctor_name ~ '، بخصوص استفسارك الكريم عن منظومة الطبيب لإدارة العيادات والمراكز الطبية وقاعدة الأدوية المصرية...')|urlencode }}" target="_blank" class="btn btn-success" title="محادثة واتساب">
+                                <i class="fa-brands fa-whatsapp"></i>
+                            </a>
+                            <!-- Direct Call -->
+                            <a href="tel:{{ lead.phone }}" class="btn btn-outline-primary" title="اتصال هاتفي">
+                                <i class="fa-solid fa-phone"></i>
+                            </a>
+                            <!-- Convert to Client -->
+                            <a href="{{ url_for('clients_list') }}?doctor={{ lead.doctor_name|urlencode }}&clinic={{ lead.clinic_name|urlencode }}&phone={{ lead.phone|urlencode }}&specialty={{ lead.specialty|urlencode }}" class="btn btn-outline-teal" title="تحويل لعيادة متعاقدة">
+                                <i class="fa-solid fa-file-contract"></i>
+                            </a>
+                            <!-- Delete -->
+                            <form action="{{ url_for('delete_lead', lead_id=lead.id) }}" method="POST" onsubmit="return confirm('هل أنت متأكد من حذف هذا الطلب؟');" style="display:inline;">
+                                <button type="submit" class="btn btn-outline-danger" title="حذف">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="text-center py-5 text-muted">
+        <i class="fa-solid fa-user-doctor fs-1 mb-3 opacity-25"></i>
+        <h5>لا توجد طلبات مطابقة للبحث أو التصفية الحالية</h5>
+        <p class="small">يمكنك إضافة طلب طبيب يدوياً عبر زر الإضافة أعلاه.</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Add Lead Modal -->
+<div class="modal fade" id="addLeadModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow">
+            <div class="modal-header bg-navy text-white border-0 py-3">
+                <h5 class="modal-title fw-bold">
+                    <i class="fa-solid fa-user-plus text-teal me-2"></i> إضافة طبيب / عميل محتمل يدوياً
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ url_for('add_lead_manual') }}" method="POST">
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">اسم الطبيب أو المسؤول: *</label>
+                        <input type="text" name="doctor_name" class="form-control" placeholder="د. شريف عبد الله" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">اسم العيادة أو المركز الطبي:</label>
+                        <input type="text" name="clinic_name" class="form-control" placeholder="عيادة الشفاء لطب الأطفال">
+                    </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label class="form-label small fw-bold">التخصص:</label>
+                            <select name="specialty" class="form-select">
+                                <option value="طب عام / باطنة">طب عام / باطنة</option>
+                                <option value="أطفال وحديثي الولادة">أطفال وحديثي الولادة</option>
+                                <option value="عظام ومفاصل">عظام ومفاصل</option>
+                                <option value="نساء وتوليد">نساء وتوليد</option>
+                                <option value="أسنان">طب وجراحة الأسنان</option>
+                                <option value="جلدية وتجميل">جلدية وتجميل</option>
+                                <option value="أنف وأذن وحنجرة">أنف وأذن وحنجرة</option>
+                                <option value="عيون">طب وجراحة العيون</option>
+                                <option value="جراحة عامة">جراحة عامة</option>
+                                <option value="مركز متعدد التخصصات">مركز متعدد التخصصات</option>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small fw-bold">المحافظة / المدينة:</label>
+                            <input type="text" name="city" class="form-control" placeholder="القاهرة">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">رقم الهاتف (واتساب): *</label>
+                        <input type="tel" name="phone" class="form-control text-start" dir="ltr" placeholder="010XXXXXXXX" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">حالة المتابعة الأولية:</label>
+                        <select name="status" class="form-select">
+                            <option value="جديد">جديد</option>
+                            <option value="تم التواصل">تم التواصل</option>
+                            <option value="جاري التجربة">جاري التجربة</option>
+                        </select>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label small fw-bold">ملاحظات ومواعيد الاتصال:</label>
+                        <textarea name="notes" class="form-control" rows="2" placeholder="يفضل الاتصال بعد الظهر، مهتم بالروشتة الإلكترونية..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 p-4 pt-0">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="submit" class="btn btn-teal rounded-pill px-4 fw-bold">حفظ الطبيب</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

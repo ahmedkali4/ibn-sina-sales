@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+
+{% block title %}رادار الأجهزة المباشر والبيكون الصامت{% endblock %}
+
+{% block content %}
+<div class="row align-items-center mb-4">
+    <div class="col-md-7">
+        <h3 class="fw-bold text-navy mb-1">
+            <i class="fa-solid fa-satellite-dish text-teal me-2"></i> رادار الأجهزة والبيكون الصامت (Telemetry Radar)
+        </h3>
+        <p class="text-muted mb-0 small">مراقبة النسخ المنصبة في العيادات لحظياً، متابعة فترات التجربة، وإرسال الأوامر والرسائل عن بعد</p>
+    </div>
+    <div class="col-md-5 text-md-end mt-3 mt-md-0">
+        <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 rounded-pill fw-bold">
+            <i class="fa-solid fa-circle-dot fa-fade me-1 text-success"></i> مستقبل النبضات متصل ونشط
+        </span>
+    </div>
+</div>
+
+<div class="bg-white rounded-4 border shadow-sm overflow-hidden mb-4">
+    {% if devices %}
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light text-muted small">
+                <tr>
+                    <th>العيادة والمسؤول</th>
+                    <th>كود الجهاز (Machine ID)</th>
+                    <th>الحالة والباقة</th>
+                    <th>الأيام المتبقية</th>
+                    <th>إحصائيات النشاط</th>
+                    <th>آخر اتصال</th>
+                    <th>رسائل الإدارة</th>
+                    <th class="text-center">إجراءات وتحكم عن بعد</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for d in devices %}
+                <tr>
+                    <td>
+                        <div class="fw-bold text-navy">{{ d.clinic_name }}</div>
+                        <div class="small text-muted">{{ d.doctor_name or 'طبيب تجريبي' }}</div>
+                        {% if d.contact_phone %}
+                            <a href="https://wa.me/2{{ d.contact_phone|replace(' ', '')|replace('-', '') }}" target="_blank" class="small text-success text-decoration-none font-monospace fw-bold">
+                                <i class="fa-brands fa-whatsapp me-1"></i> {{ d.contact_phone }}
+                            </a>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <code class="font-monospace text-uppercase bg-light p-1 rounded small fw-bold">{{ d.machine_id }}</code>
+                        <div class="small text-muted">{{ d.specialty or 'عام' }} - {{ d.city or 'مصر' }}</div>
+                    </td>
+                    <td>
+                        {% if d.status == 'LOCKED' %}
+                            <span class="badge bg-danger rounded-pill px-2 py-1"><i class="fa-solid fa-lock me-1"></i> مقفول عن بعد</span>
+                        {% elif d.status == 'ACTIVE' %}
+                            <span class="badge bg-success rounded-pill px-2 py-1"><i class="fa-solid fa-check me-1"></i> مفعل رسمي</span>
+                        {% else %}
+                            <span class="badge bg-warning-subtle text-warning fw-bold rounded-pill px-2 py-1">نسخة تجريبية</span>
+                        {% endif %}
+                        <small class="d-block text-muted">{{ d.current_tier }} (v{{ d.app_version }})</small>
+                    </td>
+                    <td>
+                        {% if d.days_remaining <= 2 and d.status == 'TRIAL' %}
+                            <span class="badge bg-danger rounded-pill px-2 py-1 fw-bold">متبقي {{ d.days_remaining }} أيام!</span>
+                        {% elif d.status == 'TRIAL' %}
+                            <span class="badge bg-info-subtle text-info rounded-pill px-2 py-1 fw-bold">متبقي {{ d.days_remaining }} أيام</span>
+                        {% else %}
+                            <span class="text-muted small">دائم</span>
+                        {% endif %}
+                    </td>
+                    <td class="small">
+                        <div><i class="fa-solid fa-user-injured text-teal me-1"></i> {{ d.patients_count }} مريض</div>
+                        <div class="text-muted"><i class="fa-solid fa-file-prescription text-primary me-1"></i> {{ d.prescriptions_count }} روشتة</div>
+                    </td>
+                    <td class="small">
+                        <div>{{ d.last_heartbeat }}</div>
+                        <small class="font-monospace text-muted">{{ d.last_ip }}</small>
+                    </td>
+                    <td class="small">
+                        {% if d.broadcast_message %}
+                            <span class="badge bg-info-subtle text-info text-truncate d-block" style="max-width: 150px;" title="{{ d.broadcast_message }}">
+                                <i class="fa-solid fa-bullhorn me-1"></i> {{ d.broadcast_message }}
+                            </span>
+                        {% else %}
+                            <span class="text-muted opacity-50">-</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-center">
+                        <div class="btn-group btn-group-sm">
+                            <!-- WhatsApp -->
+                            {% if d.contact_phone %}
+                                <a href="https://wa.me/2{{ d.contact_phone|replace(' ', '')|replace('-', '') }}?text={{ ('أهلاً بحضرتك دكتور ' ~ (d.doctor_name or d.clinic_name) ~ '، نتابع مع حضرتك تجربة منظومة الطبيب للعيادات...')|urlencode }}" target="_blank" class="btn btn-success" title="محادثة واتساب">
+                                    <i class="fa-brands fa-whatsapp"></i>
+                                </a>
+                            {% endif %}
+
+                            <!-- Extend Days -->
+                            <form action="{{ url_for('send_device_command', device_id=d.id) }}" method="POST" style="display:inline;">
+                                <input type="hidden" name="command" value="EXTEND_DAYS">
+                                <input type="hidden" name="param" value="7">
+                                <button type="submit" class="btn btn-outline-primary" title="تمديد التجربة +7 أيام إضافية">
+                                    <i class="fa-solid fa-calendar-plus"></i> +7
+                                </button>
+                            </form>
+
+                            <!-- Lock / Unlock Toggle -->
+                            <form action="{{ url_for('send_device_command', device_id=d.id) }}" method="POST" style="display:inline;">
+                                {% if d.status == 'LOCKED' %}
+                                    <input type="hidden" name="command" value="UNLOCK">
+                                    <button type="submit" class="btn btn-outline-success" title="فك القفل وتشغيل البرنامج">
+                                        <i class="fa-solid fa-lock-open"></i>
+                                    </button>
+                                {% else %}
+                                    <input type="hidden" name="command" value="LOCK">
+                                    <button type="submit" class="btn btn-outline-danger" title="قفل البرنامج عن بعد" onclick="return confirm('هل أنت متأكد من قفل هذا الجهاز عن بعد؟');">
+                                        <i class="fa-solid fa-lock"></i>
+                                    </button>
+                                {% endif %}
+                            </form>
+
+                            <!-- Broadcast Message Modal Button -->
+                            <button class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#broadcastModal{{ d.id }}" title="إرسال رسالة تنبيه لشاشة الطبيب">
+                                <i class="fa-solid fa-bullhorn"></i>
+                            </button>
+
+                            <!-- Generate License -->
+                            <a href="{{ url_for('generate_license_view') }}?machine_id={{ d.machine_id }}&clinic_name={{ d.clinic_name|urlencode }}&doctor_name={{ d.doctor_name|urlencode }}" class="btn btn-teal fw-bold" title="إصدار ترخيص دائم">
+                                <i class="fa-solid fa-key"></i>
+                            </a>
+                        </div>
+
+                        <!-- Broadcast Modal -->
+                        <div class="modal fade text-start" id="broadcastModal{{ d.id }}" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content rounded-4 border-0 shadow">
+                                    <div class="modal-header bg-navy text-white border-0 py-3">
+                                        <h6 class="modal-title fw-bold">
+                                            <i class="fa-solid fa-bullhorn text-teal me-2"></i> رسالة بث إلى: {{ d.clinic_name }}
+                                        </h6>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <form action="{{ url_for('send_device_command', device_id=d.id) }}" method="POST">
+                                        <input type="hidden" name="command" value="BROADCAST">
+                                        <div class="modal-body p-4">
+                                            <div class="mb-3">
+                                                <label class="form-label small fw-bold">نص الرسالة التي ستظهر للطبيب داخل البرنامج:</label>
+                                                <textarea name="broadcast_message" class="form-control" rows="3" placeholder="مثال: مرحباً دكتور، متبقي يومان على انتهاء التجربة، تواصل معنا لتفعيل نسختك الدائمة بخصم خاص..." required>{{ d.broadcast_message or '' }}</textarea>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer border-0 p-4 pt-0">
+                                            <button type="button" class="btn btn-light rounded-pill px-3" data-bs-dismiss="modal">إلغاء</button>
+                                            <button type="submit" class="btn btn-teal rounded-pill px-4 fw-bold">إرسال الرسالة فوراً</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="text-center py-5 text-muted">
+        <i class="fa-solid fa-satellite-dish fs-1 mb-3 opacity-25"></i>
+        <h5>لا توجد أجهزة متصلة بالرادار حتى الآن</h5>
+        <p class="small">بمجرد قيام أي عيادة بتنصيب المنظومة والانتهاء من شاشة التهيئة الأولى، ستصل نبضتها هنا تلقائياً.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

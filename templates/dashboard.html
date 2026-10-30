@@ -1,0 +1,278 @@
+{% extends 'base.html' %}
+
+{% block title %}لوحة التحكم الرئيسية{% endblock %}
+
+{% block content %}
+<div class="row align-items-center mb-4">
+    <div class="col-md-7">
+        <h3 class="fw-bold text-navy mb-1">
+            <i class="fa-solid fa-chart-pie text-teal me-2"></i> لوحة التحكم والمؤشرات التنفيذية
+        </h3>
+        <p class="text-muted mb-0 small">متابعة دقيقة لحركة الزوار، طلبات الأطباء، التعاقدات الجديدة، والتحصيلات المالية</p>
+    </div>
+    <div class="col-md-5 text-md-end mt-3 mt-md-0 d-flex gap-2 justify-content-md-end">
+        <a href="{{ url_for('generate_license_view') }}" class="btn btn-teal rounded-pill px-3 py-2 fw-bold shadow-sm">
+            <i class="fa-solid fa-key me-1"></i> إصدار ترخيص فوري
+        </a>
+        <a href="{{ url_for('leads_list') }}" class="btn btn-outline-primary rounded-pill px-3 py-2 fw-bold">
+            <i class="fa-solid fa-plus me-1"></i> إضافة عميل محتمل
+        </a>
+    </div>
+</div>
+
+<!-- Key Metric Cards Row -->
+<div class="row g-3 mb-4">
+    <!-- Visitors (Option 1 Pure Stats) -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="text-muted small fw-bold">الزوار الحقيقيون (بدون الإدارة)</span>
+                <span class="badge bg-info-subtle text-info rounded-pill px-2 py-1"><i class="fa-solid fa-users"></i></span>
+            </div>
+            <h3 class="fw-bold text-navy mb-1">{{ metrics.unique_visitors }}</h3>
+            <div class="small text-muted d-flex justify-content-between">
+                <span>مرات المشاهدة: {{ metrics.total_views }}</span>
+                <span class="text-teal fw-bold">تحميل: {{ metrics.total_downloads }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leads -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="text-muted small fw-bold">طلبات واستفسارات الأطباء</span>
+                <span class="badge bg-warning-subtle text-warning rounded-pill px-2 py-1"><i class="fa-solid fa-user-doctor"></i></span>
+            </div>
+            <h3 class="fw-bold text-navy mb-1">{{ metrics.total_leads }}</h3>
+            <div class="small text-muted d-flex justify-content-between">
+                <span class="text-danger fw-bold">طلبات جديدة: {{ metrics.new_leads_count }}</span>
+                <span>التحويل: {{ metrics.conversion_rate }}%</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Subscribed Clinics -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="text-muted small fw-bold">العيادات والمراكز المشتركة</span>
+                <span class="badge bg-success-subtle text-success rounded-pill px-2 py-1"><i class="fa-solid fa-hospital"></i></span>
+            </div>
+            <h3 class="fw-bold text-navy mb-1">{{ metrics.total_clients }}</h3>
+            <div class="small text-muted d-flex justify-content-between">
+                <span class="text-success fw-bold">تراخيص نشطة: {{ metrics.active_clients }}</span>
+                <span>رادار مباشر: {{ metrics.radar_devices_count }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Collected Revenue -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="text-muted small fw-bold">إجمالي المبيعات المحصلة</span>
+                <span class="badge bg-emerald text-white rounded-pill px-2 py-1"><i class="fa-solid fa-coins"></i></span>
+            </div>
+            <h3 class="fw-bold text-emerald mb-1">{{ "{:,.0f}".format(metrics.total_collected) }} ج.م</h3>
+            <div class="small text-muted d-flex justify-content-between">
+                <span>إجمالي التعاقدات: {{ "{:,.0f}".format(metrics.total_sales) }}</span>
+                <span class="text-danger">متبقي: {{ "{:,.0f}".format(metrics.total_pending) }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <!-- Recent Leads -->
+    <div class="col-lg-7">
+        <div class="bg-white p-4 rounded-4 border shadow-sm h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold text-navy mb-0">
+                    <i class="fa-solid fa-headset text-teal me-2"></i> أحدث طلبات الأطباء (Leads)
+                </h5>
+                <a href="{{ url_for('leads_list') }}" class="btn btn-sm btn-outline-teal rounded-pill px-3">عرض الكل</a>
+            </div>
+
+            {% if recent_leads %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light text-muted small">
+                        <tr>
+                            <th>الطبيب / العيادة</th>
+                            <th>التخصص والمدينة</th>
+                            <th>الهاتف</th>
+                            <th>الحالة</th>
+                            <th>إجراء فوري</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for lead in recent_leads %}
+                        <tr>
+                            <td>
+                                <div class="fw-bold text-dark">{{ lead.doctor_name }}</div>
+                                <small class="text-muted">{{ lead.clinic_name or 'عيادة خاصة' }}</small>
+                            </td>
+                            <td>
+                                <div>{{ lead.specialty or 'عام' }}</div>
+                                <small class="text-muted">{{ lead.city or 'القاهرة' }}</small>
+                            </td>
+                            <td dir="ltr" class="text-end font-monospace">{{ lead.phone }}</td>
+                            <td>
+                                {% if lead.status == 'جديد' %}
+                                    <span class="badge bg-danger rounded-pill px-2 py-1">جديد</span>
+                                {% elif lead.status == 'تم التواصل' %}
+                                    <span class="badge bg-primary rounded-pill px-2 py-1">تم التواصل</span>
+                                {% elif lead.status == 'تم البيع' %}
+                                    <span class="badge bg-success rounded-pill px-2 py-1">تم البيع</span>
+                                {% else %}
+                                    <span class="badge bg-secondary rounded-pill px-2 py-1">{{ lead.status }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="https://wa.me/2{{ lead.phone|replace(' ', '')|replace('-', '') }}?text={{ ('أهلاً دكتور ' ~ lead.doctor_name ~ '، بخصوص استفسارك عن منظومة الطبيب لإدارة العيادات الطبية...')|urlencode }}" target="_blank" class="btn btn-sm btn-success rounded-circle" title="محادثة واتساب مباشرة">
+                                    <i class="fa-brands fa-whatsapp"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-4 text-muted">
+                <i class="fa-solid fa-inbox fs-2 mb-2 d-block opacity-50"></i>
+                لا توجد طلبات أطباء مسجلة حتى الآن.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Quick License & Actions -->
+    <div class="col-lg-5">
+        <div class="bg-white p-4 rounded-4 border shadow-sm mb-4">
+            <h5 class="fw-bold text-navy mb-3">
+                <i class="fa-solid fa-bolt text-warning me-2"></i> إصدار ترخيص طبي سريع
+            </h5>
+            <p class="text-muted small mb-3">أدخل كود جهاز كمبيوتر العيادة لإصدار ترخيص رسمي معتمد فوراً:</p>
+
+            <form action="{{ url_for('generate_license_view') }}" method="POST">
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">اسم العيادة أو الطبيب:</label>
+                    <input type="text" name="clinic_name" class="form-control" placeholder="عيادة د. محمد النجار" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">كود الجهاز (Machine ID):</label>
+                    <input type="text" name="machine_id" class="form-control font-monospace text-uppercase" placeholder="MED-XXXX-XXXX-XXXX-XXXX" required>
+                </div>
+                <div class="row g-2 mb-3">
+                    <div class="col-6">
+                        <label class="form-label small fw-bold">نوع الترخيص:</label>
+                        <select name="duration_type" class="form-select form-select-sm">
+                            <option value="LIFETIME">دائم مدى الحياة</option>
+                            <option value="1_YEAR">اشتراك سنوي (سنة)</option>
+                            <option value="6_MONTHS">اشتراك 6 أشهر</option>
+                            <option value="30_DAYS">تجربة 30 يوماً</option>
+                        </select>
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label small fw-bold">باقة النظام:</label>
+                        <select name="license_type" class="form-select form-select-sm">
+                            <option value="FULL">باقة العيادة الشاملة</option>
+                            <option value="CENTER">باقة المركز الطبي المتعدد</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-teal w-100 rounded-pill py-2 fw-bold">
+                    <i class="fa-solid fa-key me-1"></i> توليد المفتاح وتجهيز رسالة واتساب
+                </button>
+            </form>
+        </div>
+
+        <!-- Upcoming Installments Alert Box -->
+        <div class="bg-white p-4 rounded-4 border shadow-sm">
+            <h6 class="fw-bold text-navy mb-3 d-flex justify-content-between align-items-center">
+                <span><i class="fa-solid fa-clock-rotate-left text-danger me-2"></i> أقساط ومستحقات قادمة</span>
+                <span class="badge bg-danger rounded-pill">{{ upcoming_installments|length }}</span>
+            </h6>
+            {% if upcoming_installments %}
+                <ul class="list-group list-group-flush">
+                    {% for inst in upcoming_installments %}
+                    <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="fw-bold">{{ inst.clinic_name }}</div>
+                            <small class="text-muted">تاريخ الاستحقاق: {{ inst.due_date }}</small>
+                        </div>
+                        <div class="text-end">
+                            <span class="fw-bold text-danger">{{ "{:,.0f}".format(inst.amount) }} ج.م</span>
+                            <div>
+                                <a href="https://wa.me/2{{ inst.phone }}" target="_blank" class="btn btn-sm btn-outline-success py-0 px-2 rounded-pill small">
+                                    <i class="fa-brands fa-whatsapp"></i> تذكير
+                                </a>
+                            </div>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <div class="text-muted small text-center py-2">لا توجد أقساط مستحقة حالياً.</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Subscribed Clinics Row -->
+<div class="bg-white p-4 rounded-4 border shadow-sm">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold text-navy mb-0">
+            <i class="fa-solid fa-hospital text-teal me-2"></i> أحدث العيادات والمراكز المشتركة
+        </h5>
+        <a href="{{ url_for('clients_list') }}" class="btn btn-sm btn-outline-teal rounded-pill px-3">إدارة جميع العيادات</a>
+    </div>
+
+    {% if recent_clients %}
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light text-muted small">
+                <tr>
+                    <th>اسم العيادة والمركز</th>
+                    <th>الطبيب المسؤول</th>
+                    <th>التخصص</th>
+                    <th>الهاتف</th>
+                    <th>الباقة ونظام السداد</th>
+                    <th>المسدد والمتبقي</th>
+                    <th>إجراء</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for c in recent_clients %}
+                <tr>
+                    <td class="fw-bold text-navy">{{ c.clinic_name }}</td>
+                    <td>{{ c.doctor_name }}</td>
+                    <td>{{ c.specialty }}</td>
+                    <td dir="ltr" class="text-end font-monospace">{{ c.phone }}</td>
+                    <td>
+                        <span class="badge bg-primary-subtle text-primary">{{ c.current_edition }}</span>
+                        <small class="text-muted d-block">{{ c.payment_model }}</small>
+                    </td>
+                    <td>
+                        <span class="text-success fw-bold">{{ "{:,.0f}".format(c.paid_amount) }}</span>
+                        {% if c.remaining_amount > 0 %}
+                            <span class="text-danger small">/ متبقي: {{ "{:,.0f}".format(c.remaining_amount) }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{{ url_for('client_detail', client_id=c.id) }}" class="btn btn-sm btn-light border rounded-pill px-3">
+                            الملف المالي والتراخيص
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="text-center py-4 text-muted">لا توجد عيادات مسجلة بعد.</div>
+    {% endif %}
+</div>
+{% endblock %}
