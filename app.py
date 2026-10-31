@@ -1167,12 +1167,82 @@ def download_backup():
         return redirect(url_for('settings_view'))
 
 
+# ----------------- Vercel Internal Prefix Aliases & Smart Fallbacks -----------------
+
+@app.route('/app')
+@app.route('/app/')
+@app.route('/app.py')
+@app.route('/app.py/')
+@app.route('/index')
+@app.route('/index/')
+@app.route('/index.py')
+@app.route('/api/index')
+@app.route('/api/index/')
+def vercel_root_alias():
+    return home()
+
+@app.route('/app/login', methods=['GET', 'POST'])
+@app.route('/app.py/login', methods=['GET', 'POST'])
+@app.route('/index/login', methods=['GET', 'POST'])
+@app.route('/index.py/login', methods=['GET', 'POST'])
+@app.route('/api/index/login', methods=['GET', 'POST'])
+def vercel_login_alias():
+    return login()
+
+@app.route('/app/dashboard')
+@app.route('/app.py/dashboard')
+@app.route('/index/dashboard')
+@app.route('/index.py/dashboard')
+@app.route('/api/index/dashboard')
+def vercel_dashboard_alias():
+    return dashboard()
+
+@app.route('/app/radar')
+@app.route('/app.py/radar')
+@app.route('/index/radar')
+@app.route('/index.py/radar')
+@app.route('/api/index/radar')
+def vercel_radar_alias():
+    return radar()
+
+@app.errorhandler(404)
+def handle_404_routing(e):
+    """
+    Guarantees no visitor or admin ever sees Werkzeug's default 404 screen.
+    Strips any internal serverless execution prefixes and delivers the right page.
+    """
+    req_path = request.path or '/'
+    for prefix in ('/app.py', '/app', '/index.py', '/index', '/api/index.py', '/api/index', '/api'):
+        if req_path.startswith(prefix):
+            req_path = req_path[len(prefix):]
+            break
+    if not req_path:
+        req_path = '/'
+
+    if req_path in ('/', ''):
+        return home()
+    elif req_path.startswith('/login'):
+        return login()
+    elif req_path.startswith('/dashboard'):
+        return dashboard()
+    elif req_path.startswith('/radar'):
+        return radar()
+    elif req_path.startswith('/clients'):
+        return clients()
+    elif req_path.startswith('/leads'):
+        return leads()
+    elif req_path.startswith('/settings'):
+        return settings_view()
+
+    return home()
+
+
 # ----------------- Run Local Server -----------------
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5050))
     print(f"\n========================================================")
-    print(f"  منظومة الطبيب - بوابة المبيعات وصفحة الهبوط والإدارة")
+    print(f"  منظومة ابن سينا - بوابة المبيعات وصفحة الهبوط والإدارة")
     print(f"  العنوان المحلي: http://127.0.0.1:{port}")
     print(f"  بيانات دخول المدير الافتراضية: ahmed / admin123")
     print(f"========================================================\n")
