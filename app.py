@@ -858,7 +858,7 @@ def clinic_install_beacon():
     city = data.get('city', '').strip()
     app_version = data.get('app_version', '2.0')
     current_tier = data.get('current_tier', 'TRIAL')
-    days_remaining = int(data.get('days_remaining', 7))
+    days_remaining = int(data.get('days_remaining', 30))
 
     if not machine_id:
         return jsonify({'status': 'error', 'message': 'Machine ID missing'}), 400
@@ -912,7 +912,7 @@ def clinic_install_beacon():
             WHERE id = ?
         """, (
             doctor_name or clinic_name, clinic_name, phone or '', specialty, city,
-            f"كود الجهاز: {machine_id} - تجربة سارية 7 أيام", existing_lead['id']
+            f"كود الجهاز: {machine_id} - تجربة سارية 30 يوماً", existing_lead['id']
         ))
     else:
         c.execute("""
@@ -921,7 +921,7 @@ def clinic_install_beacon():
             ) VALUES (?, ?, ?, ?, ?, 'جديد', 'بيكون تثبيت المنظومة لأول مرة', ?)
         """, (
             doctor_name or clinic_name, clinic_name, phone or '', specialty, city,
-            f"كود الجهاز: {machine_id} - تجربة سارية 7 أيام"
+            f"كود الجهاز: {machine_id} - تجربة سارية 30 يوماً"
         ))
 
     # 3. Log audit event
@@ -954,7 +954,7 @@ def clinic_heartbeat():
     doctor_name = data.get('doctor_name', '')
     phone = data.get('phone', '')
     current_tier = data.get('current_tier', 'TRIAL')
-    days_remaining = int(data.get('days_remaining', 7))
+    days_remaining = int(data.get('days_remaining', 30))
     patients_count = int(data.get('patients_count', 0))
     prescriptions_count = int(data.get('prescriptions_count', 0))
     app_version = data.get('app_version', '2.0')
@@ -1070,8 +1070,18 @@ def send_device_command(device_id):
         c.execute("UPDATE telemetry_devices SET broadcast_message = ? WHERE id = ?", (broadcast, device_id))
         flash('تم تحديث رسالة البث للمركز الطبي.', 'success')
     elif command in ('LOCK', 'UNLOCK'):
-        c.execute("UPDATE telemetry_devices SET remote_command = ?, remote_command_param = ? WHERE id = ?", (command, param, device_id))
-        flash(f"تم إرسال أمر {('قفل النظام' if command == 'LOCK' else 'فك القفل')} للجهاز بنجاح.", 'warning' if command == 'LOCK' else 'success')
+        new_status = 'LOCKED' if command == 'LOCK' else 'TRIAL'
+        c.execute("UPDATE telemetry_devices SET status = ?, remote_command = ?, remote_command_param = ? WHERE id = ?", (new_status, command, param, device_id))
+        flash(f"تم إرسال أمر {('قفل المنظومة' if command == 'LOCK' else 'فك القفل')} للجهاز بنجاح.", 'warning' if command == 'LOCK' else 'success')
+    elif command == 'READ_ONLY':
+        c.execute("UPDATE telemetry_devices SET status = 'READ_ONLY', remote_command = 'READ_ONLY', remote_command_param = ? WHERE id = ?", (param, device_id))
+        flash('تم تحويل المنظومة إلى وضع القراءة فقط (Read-Only) بنجاح.', 'warning')
+    elif command == 'FULL_ACCESS':
+        c.execute("UPDATE telemetry_devices SET status = 'ACTIVE', remote_command = 'FULL_ACCESS', remote_command_param = ? WHERE id = ?", (param, device_id))
+        flash('تم إلغاء وضع القراءة فقط وتفعيل الإدخال الكامل بنجاح.', 'success')
+    elif command == 'ACTIVATE':
+        c.execute("UPDATE telemetry_devices SET status = 'ACTIVE', current_tier = 'FULL', days_remaining = 9999, remote_command = 'ACTIVATE', remote_command_param = 'FULL' WHERE id = ?", (device_id,))
+        flash('تم إرسال أمر التفعيل الدائم الشامل للعيادة بنجاح!', 'success')
     elif command == 'EXTEND_DAYS':
         days = int(param or 7)
         c.execute("""

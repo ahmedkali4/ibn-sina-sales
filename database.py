@@ -388,7 +388,7 @@ def init_db():
             current_tier TEXT NOT NULL DEFAULT 'TRIAL',
             reported_tier TEXT DEFAULT 'TRIAL',
             status TEXT NOT NULL DEFAULT 'TRIAL',
-            days_remaining INTEGER DEFAULT 7,
+            days_remaining INTEGER DEFAULT 30,
             trial_started_at TEXT,
             trial_expires_at TEXT,
             last_heartbeat TEXT,
