@@ -219,7 +219,7 @@
                         <i class="fa-solid fa-phone text-teal"></i> {{ sales_phone }}
                     </a>
                     <button class="btn btn-teal rounded-pill px-4 py-2" data-bs-toggle="modal" data-bs-target="#leadModal">
-                        <i class="fa-solid fa-calendar-check me-1"></i> طلب تجربة مجانية
+                        <i class="fa-solid fa-calendar-check me-1"></i> تجربة شهر مجاناً
                     </button>
                     <!-- Discreet admin portal link -->
                     <a href="{{ url_for('login') }}" class="btn btn-sm btn-link text-white-50 text-decoration-none" title="دخول إدارة المبيعات">
@@ -247,17 +247,17 @@
 
                     <div class="d-flex flex-wrap justify-content-center justify-content-lg-start gap-3 mb-4">
                         <a href="/download" class="btn btn-teal btn-lg px-4 py-3 rounded-pill fs-6 shadow">
-                            <i class="fa-solid fa-download me-2"></i> حمّل نسختك التجريبية الآن مجاناً
+                            <i class="fa-solid fa-download me-2"></i> حمّل نسختك التجريبية مجاناً (30 يوماً)
                         </a>
                         <button class="btn btn-outline-light btn-lg px-4 py-3 rounded-pill fs-6" data-bs-toggle="modal" data-bs-target="#leadModal">
-                            <i class="fa-solid fa-stethoscope me-2"></i> حجز جلسة استشارة وعرض توضيحي
+                            <i class="fa-solid fa-stethoscope me-2"></i> طلب تجربة شهر كامل بالعيادة
                         </button>
                     </div>
 
                     <div class="d-flex flex-wrap justify-content-center justify-content-lg-start align-items-center gap-4 text-white-50 small">
-                        <span><i class="fa-solid fa-circle-check text-emerald me-1"></i> ترخيص دائم مدى الحياة</span>
-                        <span><i class="fa-solid fa-circle-check text-emerald me-1"></i> يعمل دون إنترنت (Offline)</span>
-                        <span><i class="fa-solid fa-circle-check text-emerald me-1"></i> دعم فني وتدريب مجاني</span>
+                        <span><i class="fa-solid fa-circle-check text-emerald me-1"></i> تجربة مجانية 30 يوماً بكامل الخصائص</span>
+                        <span><i class="fa-solid fa-circle-check text-emerald me-1"></i> ترخيص دائم مدى الحياة بدون اشتراك شهري</span>
+                        <span><i class="fa-solid fa-circle-check text-emerald me-1"></i> يعمل دون إنترنت (Offline) بنسبة 100%</span>
                     </div>
                 </div>
 
@@ -509,26 +509,27 @@
                 <div class="col-lg-5">
                     <div class="pricing-card h-100 d-flex flex-column">
                         <div class="text-center pb-3 border-bottom mb-4">
-                            <span class="badge bg-primary-subtle text-primary rounded-pill px-3 py-1 mb-2">للعيادات الفردية</span>
+                            <span class="badge bg-success-subtle text-success rounded-pill px-3 py-1 mb-2">شاملة شهر كامل تجربة مجانية بالعيادة (30 يوماً)</span>
                             <h3 class="fw-bold text-navy">باقة العيادة الشاملة</h3>
                             <p class="text-muted small">ترخيص دائم لجهاز الطبيب والتمريض بالعيادة</p>
-                            <div class="display-5 fw-bold text-navy my-3">
-                                {{ prices.single }} <span class="fs-6 text-muted">جنيه مصري / مرة واحدة</span>
+                            <div class="display-6 fw-bold text-navy my-3">
+                                تبدأ من {{ prices.single }} <span class="fs-6 text-muted">جنيه مصري / تدفع مرة واحدة مدى الحياة</span>
                             </div>
                         </div>
 
                         <ul class="list-unstyled d-flex flex-column gap-3 mb-4 flex-grow-1 text-muted">
-                            <li><i class="fa-solid fa-check text-emerald me-2"></i> ترخيص دائم مدى الحياة بدون أي اشتراك شهري</li>
-                            <li><i class="fa-solid fa-check text-emerald me-2"></i> بنك الأدوية المصري الكامل (25,133 دواء ببدائلها)</li>
-                            <li><i class="fa-solid fa-check text-emerald me-2"></i> محرك فحص التعارضات والحساسية التلقائي</li>
-                            <li><i class="fa-solid fa-check text-emerald me-2"></i> طباعة الروشتة وإرسالها لواتساب المريض</li>
-                            <li><i class="fa-solid fa-check text-emerald me-2"></i> شاشة وحسابات درج النقدية وتقفيل الشيفت</li>
-                            <li><i class="fa-solid fa-check text-emerald me-2"></i> ربط موبايل التمريض لسحب التذاكر عبر الشبكة الداخلية</li>
-                            <li><i class="fa-solid fa-check text-emerald me-2"></i> تدريب كامل ودعم فني ونسخ احتياطي آمن</li>
+                            <li><i class="fa-solid fa-check text-emerald me-2"></i> <strong>شهر كامل تجربة مجانية بدون أي التزام (30 يوماً)</strong></li>
+                            <li><i class="fa-solid fa-check text-emerald me-2"></i> ترخيص دائم مدى الحياة بدون أي اشتراك شهري أو سنوي</li>
+                            <li><i class="fa-solid fa-check text-emerald me-2"></i> بنك الأدوية المصري الكامل (25,133 دواء ببدائلها وأسعارها)</li>
+                            <li><i class="fa-solid fa-check text-emerald me-2"></i> محرك فحص التعارضات الدوائية والحساسية التلقائي</li>
+                            <li><i class="fa-solid fa-check text-emerald me-2"></i> طباعة الروشتة وإرسالها لواتساب المريض بضغطة واحدة</li>
+                            <li><i class="fa-solid fa-check text-emerald me-2"></i> شاشة وحسابات درج النقدية وتقفيل الشيفتات اليومية</li>
+                            <li><i class="fa-solid fa-check text-emerald me-2"></i> ربط تطبيق موبايل التمريض لسحب التذاكر محلياً</li>
+                            <li><i class="fa-solid fa-check text-emerald me-2"></i> تدريب كامل ودعم فني ونسخ احتياطي آمن لقاعدة البيانات</li>
                         </ul>
 
                         <button class="btn btn-outline-teal rounded-pill py-3 fw-bold w-100" data-bs-toggle="modal" data-bs-target="#leadModal">
-                            طلب التعاقد على الباقة الفردية
+                            طلب تجربة مجانية شهر كامل بالعيادة
                         </button>
                     </div>
                 </div>
@@ -537,28 +538,28 @@
                 <div class="col-lg-5">
                     <div class="pricing-card featured h-100 d-flex flex-column">
                         <div class="position-absolute top-0 start-50 translate-middle">
-                            <span class="badge bg-teal text-white rounded-pill px-4 py-2 shadow-sm">الأكثر طلباً للمراكز</span>
+                            <span class="badge bg-teal text-white rounded-pill px-4 py-2 shadow-sm">الأكثر طلباً للمراكز الطبية</span>
                         </div>
                         <div class="text-center pb-3 border-bottom mb-4 mt-2">
-                            <span class="badge bg-teal-subtle text-teal rounded-pill px-3 py-1 mb-2">المراكز والمجمعات الطبية</span>
+                            <span class="badge bg-teal-subtle text-teal rounded-pill px-3 py-1 mb-2">شاملة شهر كامل تجربة مجانية للمركز (30 يوماً)</span>
                             <h3 class="fw-bold text-navy">باقة المركز الطبي المتعدد</h3>
                             <p class="text-muted small">للمراكز متعددة التخصصات والغرف والأطباء</p>
-                            <div class="display-5 fw-bold text-teal my-3">
-                                {{ prices.multi }} <span class="fs-6 text-muted">جنيه مصري / مرة واحدة</span>
+                            <div class="h3 fw-bold text-teal my-3">
+                                عرض مخصص حسب التخصصات والعيادات
                             </div>
                         </div>
 
                         <ul class="list-unstyled d-flex flex-column gap-3 mb-4 flex-grow-1 text-muted">
-                            <li><i class="fa-solid fa-check text-emerald me-2"></i> <strong>كل مميزات باقة العيادة الشاملة</strong></li>
+                            <li><i class="fa-solid fa-check text-emerald me-2"></i> <strong>كل مميزات باقة العيادة الشاملة بكامل طاقتها</strong></li>
                             <li><i class="fa-solid fa-check text-emerald me-2"></i> دعم تعدد الأطباء والتخصصات والشيفتات داخل المركز</li>
                             <li><i class="fa-solid fa-check text-emerald me-2"></i> حساب تلقائي لنسبة كل طبيب في الكشوفات والعمليات</li>
                             <li><i class="fa-solid fa-check text-emerald me-2"></i> صلاحيات مخصصة لكل طبيب وموظف استقبال وتمريض</li>
-                            <li><i class="fa-solid fa-check text-emerald me-2"></i> شاشة الانتظار العامة لنداء المرضى</li>
-                            <li><i class="fa-solid fa-check text-emerald me-2"></i> أولوية قصوى في الدعم الفني والتدريب الميداني</li>
+                            <li><i class="fa-solid fa-check text-emerald me-2"></i> شاشة الانتظار العامة لنداء المرضى وتنظيم الدور</li>
+                            <li><i class="fa-solid fa-check text-emerald me-2"></i> أولوية قصوى في الدعم الفني والتدريب الميداني لفريق المركز</li>
                         </ul>
 
                         <button class="btn btn-teal rounded-pill py-3 fw-bold w-100 shadow" data-bs-toggle="modal" data-bs-target="#leadModal">
-                            طلب التعاقد على باقة المركز الطبي
+                            طلب عرض سعر وتجربة شهر مجاناً
                         </button>
                     </div>
                 </div>
@@ -626,6 +627,19 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#faq5">
+                            ما هي مدة التجربة المجانية وماذا تشمل؟
+                        </button>
+                    </h2>
+                    <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#clinicFaq">
+                        <div class="accordion-body text-muted leading-relaxed">
+                            نوفر لك تجربة مجانية كاملة لمدة <strong>شهر كامل (30 يوماً)</strong> داخل عيادتك بكافة المزايا وبنك الأدوية دون أي تقييد، حتى تتأكد بنفسك من ملاءمة النظام لعيادتك قبل دفع أي مبالغ.
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -636,14 +650,14 @@
             <div class="modal-content rounded-4 border-0 shadow">
                 <div class="modal-header bg-navy text-white border-0 py-3">
                     <h5 class="modal-title fw-bold">
-                        <i class="fa-solid fa-stethoscope text-teal me-2"></i> طلب تجربة مجانية واستشارة
+                        <i class="fa-solid fa-calendar-check text-teal me-2"></i> طلب تجربة مجانية شهر كامل (30 يوماً)
                     </h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form action="/leads/submit" method="POST" id="leadForm">
                     <div class="modal-body p-4">
                         <p class="text-muted small mb-3">
-                            سجل بيانات عيادتك وسيقوم مستشار النظم الطبية بالتواصل معك لإعداد نسختك التجريبية وتدريب فريقك:
+                            سجل بيانات عيادتك لتفعيل نسختك التجريبية المجانية لمدة شهر كامل وتدريب فريقك:
                         </p>
                         <div class="mb-3">
                             <label class="form-label fw-bold small">اسم الطبيب أو المدير المسؤول: *</label>

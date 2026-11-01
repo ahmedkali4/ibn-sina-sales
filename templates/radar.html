@@ -52,6 +52,8 @@
                     <td>
                         {% if d.status == 'LOCKED' %}
                             <span class="badge bg-danger rounded-pill px-2 py-1"><i class="fa-solid fa-lock me-1"></i> مقفول عن بعد</span>
+                        {% elif d.status == 'READ_ONLY' %}
+                            <span class="badge bg-secondary rounded-pill px-2 py-1"><i class="fa-solid fa-eye me-1"></i> وضع القراءة فقط</span>
                         {% elif d.status == 'ACTIVE' %}
                             <span class="badge bg-success rounded-pill px-2 py-1"><i class="fa-solid fa-check me-1"></i> مفعل رسمي</span>
                         {% else %}
@@ -103,6 +105,21 @@
                                 </button>
                             </form>
 
+                            <!-- Read-Only Toggle -->
+                            <form action="{{ url_for('send_device_command', device_id=d.id) }}" method="POST" style="display:inline;">
+                                {% if d.status == 'READ_ONLY' %}
+                                    <input type="hidden" name="command" value="FULL_ACCESS">
+                                    <button type="submit" class="btn btn-outline-secondary" title="إلغاء القراءة فقط وتفعيل الإدخال الكامل">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </button>
+                                {% else %}
+                                    <input type="hidden" name="command" value="READ_ONLY">
+                                    <button type="submit" class="btn btn-outline-secondary" title="تحويل لقراءة فقط (يمنع حفظ كشوفات جديدة)" onclick="return confirm('هل تريد تحويل البرنامج إلى وضع القراءة فقط لهذا الجهاز؟');">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </button>
+                                {% endif %}
+                            </form>
+
                             <!-- Lock / Unlock Toggle -->
                             <form action="{{ url_for('send_device_command', device_id=d.id) }}" method="POST" style="display:inline;">
                                 {% if d.status == 'LOCKED' %}
@@ -117,6 +134,16 @@
                                     </button>
                                 {% endif %}
                             </form>
+
+                            <!-- One-Click Remote Activation -->
+                            {% if d.status != 'ACTIVE' %}
+                            <form action="{{ url_for('send_device_command', device_id=d.id) }}" method="POST" style="display:inline;">
+                                <input type="hidden" name="command" value="ACTIVATE">
+                                <button type="submit" class="btn btn-outline-success fw-bold" title="تفعيل النسخة رسمياً ودائماً عن بعد بنقرة واحدة" onclick="return confirm('تفعيل المنظومة رسمياً ودائماً لهذا الجهاز عن بعد؟');">
+                                    <i class="fa-solid fa-circle-check"></i>
+                                </button>
+                            </form>
+                            {% endif %}
 
                             <!-- Broadcast Message Modal Button -->
                             <button class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#broadcastModal{{ d.id }}" title="إرسال رسالة تنبيه لشاشة الطبيب">
